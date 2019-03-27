@@ -76,6 +76,8 @@ public interface Var<T> extends Val<T>, Property<T> {
      * Converts {@linkplain BooleanProperty} to {@code Var<Boolean>} to help deal
      * with the consequences of {@linkplain BooleanProperty} not being a subtype
      * of {@code Property<Boolean>}.
+     *
+     * @since RFXX
      */
     static Var<Boolean> booleanVar(BooleanProperty p) {
         return Var.mapBidirectional(p, Boolean::booleanValue, Function.identity());

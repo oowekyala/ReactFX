@@ -25,7 +25,7 @@ public interface Subscription {
         return new BiSubscription(this, other);
     }
 
-    static final Subscription EMPTY = () -> {};
+    Subscription EMPTY = () -> {};
 
     /**
      * Returns a new aggregate subscription whose {@link #unsubscribe()}
@@ -118,6 +118,8 @@ public interface Subscription {
      * When the returned subscription is unsubscribed, all elementary
      * subscriptions are unsubscribed as well, and no new elementary
      * subscriptions will be created.
+     *
+     * @since RFXX
      */
     static <T> Subscription dynamic(ObservableList<? extends T> elems,
                                     BiFunction<? super T, Integer, ? extends Subscription> f) {
@@ -173,6 +175,8 @@ public interface Subscription {
      * When the returned subscription is unsubscribed, all elementary
      * subscriptions are unsubscribed as well, and no new elementary
      * subscriptions will be created.
+     *
+     * @since RFXX
      */
     static <T> Subscription dynamic(ObservableList<? extends T> elems, Function<? super T, ? extends Subscription> f) {
         return dynamic(elems, (e, i) -> f.apply(e));

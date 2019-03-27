@@ -14,6 +14,7 @@ import javafx.beans.value.ObservableBooleanValue;
  * An event stream whose events can be vetoed during a certain period, after which they are
  * emitted.
  *
+ * @since RFXX
  * @author Clément Fournier
  */
 final class VetoableEventStream<I> extends EventStreamBase<I> implements AwaitingEventStream<I> {

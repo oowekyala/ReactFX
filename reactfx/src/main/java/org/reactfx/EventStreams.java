@@ -734,6 +734,7 @@ public class EventStreams {
      * @param vetoPeriod Duration within which "true" values can be vetoed
      * @see #vetoableNo(EventStream, Duration)
      * @see EventStream#vetoable(Predicate, BiPredicate, BiFunction, Duration)
+     * @since RFXX
      */
     public static AwaitingEventStream<Boolean> vetoableYes(EventStream<Boolean> input, Duration vetoPeriod) {
         return input.vetoable(b -> b, (a, b) -> !b, (a, b) -> b, vetoPeriod);
@@ -749,6 +750,7 @@ public class EventStreams {
      *
      * @see #vetoableYes(EventStream, Duration)
      * @see EventStream#vetoable(Predicate, BiPredicate, BiFunction, Duration)
+     * @since RFXX
      */
     public static AwaitingEventStream<Boolean> vetoableNo(EventStream<Boolean> input, Duration vetoPeriod) {
         return input.vetoable(b -> !b, (a, b) -> b, (a, b) -> b, vetoPeriod);
@@ -762,6 +764,7 @@ public class EventStreams {
      * @param input      Stream to observe
      * @param vetoPeriod Duration within which null values can be vetoed
      * @see EventStream#vetoable(Predicate, BiPredicate, BiFunction, Duration)
+     * @since RFXX
      */
     public static <T> AwaitingEventStream<T> vetoableNull(EventStream<T> input, Duration vetoPeriod) {
         return input.vetoable(Objects::isNull, (a, b) -> b != null, (a, b) -> null, vetoPeriod);

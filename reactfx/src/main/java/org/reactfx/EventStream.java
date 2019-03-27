@@ -655,6 +655,8 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
      *                          a normal event.
      * @param vetoPeriod        Maximum time during which a vetoable event stays pending
      *
+     * @since RFXX
+     *
      * @see EventStreams#vetoableYes(EventStream, Duration)
      * @see EventStreams#vetoableNo(EventStream, Duration)
      * @see EventStreams#vetoableNull(EventStream, Duration)
@@ -1214,6 +1216,8 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
      * @param initialValue used as the returned val's value until this stream emits the first value.
      *
      * @return Val reflecting the most recently emitted value.
+     *
+     * @since RFXX
      */
     default Val<T> toVal(T initialValue) {
         return new StreamVal<>(this, initialValue);

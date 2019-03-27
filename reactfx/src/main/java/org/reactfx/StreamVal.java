@@ -2,6 +2,9 @@ package org.reactfx;
 
 import org.reactfx.value.ValBase;
 
+/**
+ * @since RFXX
+ */
 class StreamVal<T> extends ValBase<T> {
 
     private final EventStream<T> input;

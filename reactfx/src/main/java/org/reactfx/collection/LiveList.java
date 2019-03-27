@@ -187,6 +187,7 @@ extends ObservableList<E>, Observable<LiveList.Observer<? super E, ?>> {
      * @param <F> Type of the returned list
      *
      * @return A new LiveList
+     * @since RFXX
      */
     default <F> LiveList<F> flattenVals(Function<? super E, ? extends ObservableValue<? extends F>> f) {
         return flattenVals(this, f);
@@ -393,6 +394,7 @@ extends ObservableList<E>, Observable<LiveList.Observer<? super E, ?>> {
      * @return A new live list
      *
      * @throws NullPointerException If the source collection is null
+     * @since RFXX
      */
     static <E> LiveList<E> flattenVals(ObservableList<? extends ObservableValue<? extends E>> source) {
         return new FlatValList<>(Objects.requireNonNull(source));
@@ -413,6 +415,7 @@ extends ObservableList<E>, Observable<LiveList.Observer<? super E, ?>> {
      * @return A new live list
      *
      * @throws NullPointerException If the source collection is null
+     * @since RFXX
      */
     static <E, F> LiveList<F> flattenVals(ObservableList<? extends E> source,
                                           Function<? super E, ? extends ObservableValue<? extends F>> f) {

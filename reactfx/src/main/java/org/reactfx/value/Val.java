@@ -428,6 +428,7 @@ extends ObservableValue<T>, Observable<Consumer<? super T>> {
     /**
      * Creates a val that holds the latest value of the given stream. The
      * initial value is used until the stream emits its first event.
+     * @since RFXX
      */
     static <T> Val<T> fromStream(EventStream<T> stream, T initialValue) {
         return stream.toVal(initialValue);
