@@ -31,23 +31,26 @@ import javafx.scene.control.IndexRange;
  * @param <E> type of list elements
  */
 public interface LiveList<E>
-extends ObservableList<E>, Observable<LiveList.Observer<? super E, ?>> {
+        extends ObservableList<E>, Observable<LiveList.Observer<? super E, ?>> {
 
     /* ************ *
      * Nested Types *
      * ************ */
 
-    public interface Observer<E, O> {
+    interface Observer<E, O> {
+
         AccumulatorSize sizeOf(ListModificationSequence<? extends E> mods);
+
         O headOf(ListModificationSequence<? extends E> mods);
+
         <F extends E> ListModificationSequence<F> tailOf(ListModificationSequence<F> mods);
 
         void onChange(O change);
     }
 
     @FunctionalInterface
-    public interface QuasiChangeObserver<E>
-    extends Observer<E, QuasiListChange<? extends E>> {
+    interface QuasiChangeObserver<E>
+            extends Observer<E, QuasiListChange<? extends E>> {
 
         @Override
         default AccumulatorSize sizeOf(
@@ -69,8 +72,8 @@ extends ObservableList<E>, Observable<LiveList.Observer<? super E, ?>> {
     }
 
     @FunctionalInterface
-    public interface QuasiModificationObserver<E>
-    extends Observer<E, QuasiListModification<? extends E>> {
+    interface QuasiModificationObserver<E>
+            extends Observer<E, QuasiListModification<? extends E>> {
 
         @Override
         default AccumulatorSize sizeOf(
@@ -187,6 +190,7 @@ extends ObservableList<E>, Observable<LiveList.Observer<? super E, ?>> {
      * @param <F> Type of the returned list
      *
      * @return A new LiveList
+     *
      * @since RFXX
      */
     default <F> LiveList<F> flattenVals(Function<? super E, ? extends ObservableValue<? extends F>> f) {
@@ -266,7 +270,7 @@ extends ObservableList<E>, Observable<LiveList.Observer<? super E, ?>> {
     static <E> Subscription observeQuasiChanges(
             ObservableList<? extends E> list,
             QuasiChangeObserver<? super E> observer) {
-        if(list instanceof LiveList) {
+        if (list instanceof LiveList) {
             LiveList<? extends E> lst = (LiveList<? extends E>) list;
             return lst.observeQuasiChanges(observer);
         } else {
@@ -289,7 +293,7 @@ extends ObservableList<E>, Observable<LiveList.Observer<? super E, ?>> {
 
     static <E> EventStream<QuasiListChange<? extends E>> quasiChangesOf(
             ObservableList<E> list) {
-        if(list instanceof LiveList) {
+        if (list instanceof LiveList) {
             LiveList<E> lst = (LiveList<E>) list;
             return lst.quasiChanges();
         } else {
@@ -323,7 +327,7 @@ extends ObservableList<E>, Observable<LiveList.Observer<? super E, ?>> {
     }
 
     static <E> SuspendableList<E> suspendable(ObservableList<E> list) {
-        if(list instanceof SuspendableList) {
+        if (list instanceof SuspendableList) {
             return (SuspendableList<E>) list;
         } else {
             return new SuspendableListWrapper<>(list);
@@ -331,7 +335,7 @@ extends ObservableList<E>, Observable<LiveList.Observer<? super E, ?>> {
     }
 
     static <E> MemoizationList<E> memoize(ObservableList<E> list) {
-        if(list instanceof MemoizationList) {
+        if (list instanceof MemoizationList) {
             return (MemoizationList<E>) list;
         } else {
             return new MemoizationListImpl<>(list);
@@ -425,8 +429,9 @@ extends ObservableList<E>, Observable<LiveList.Observer<? super E, ?>> {
 
 
 class ChangeObserverWrapper<T>
-extends WrapperBase<Consumer<? super ListChange<? extends T>>>
-implements QuasiChangeObserver<T> {
+        extends WrapperBase<Consumer<? super ListChange<? extends T>>>
+        implements QuasiChangeObserver<T> {
+
     private final ObservableList<T> list;
 
     ChangeObserverWrapper(
@@ -443,8 +448,9 @@ implements QuasiChangeObserver<T> {
 }
 
 class ModificationObserverWrapper<T>
-extends WrapperBase<Consumer<? super ListModification<? extends T>>>
-implements QuasiModificationObserver<T> {
+        extends WrapperBase<Consumer<? super ListModification<? extends T>>>
+        implements QuasiModificationObserver<T> {
+
     private final ObservableList<T> list;
 
     ModificationObserverWrapper(
@@ -461,8 +467,9 @@ implements QuasiModificationObserver<T> {
 }
 
 class InvalidationListenerWrapper<T>
-extends WrapperBase<InvalidationListener>
-implements QuasiChangeObserver<T> {
+        extends WrapperBase<InvalidationListener>
+        implements QuasiChangeObserver<T> {
+
     private final ObservableList<T> list;
 
     public InvalidationListenerWrapper(
@@ -479,8 +486,9 @@ implements QuasiChangeObserver<T> {
 }
 
 class ChangeListenerWrapper<T>
-extends WrapperBase<ListChangeListener<? super T>>
-implements QuasiChangeObserver<T> {
+        extends WrapperBase<ListChangeListener<? super T>>
+        implements QuasiChangeObserver<T> {
+
     private final ObservableList<T> list;
 
     public ChangeListenerWrapper(
@@ -496,7 +504,7 @@ implements QuasiChangeObserver<T> {
         List<? extends QuasiListModification<? extends T>> modifications =
                 change.getModifications();
 
-        if(modifications.isEmpty()) {
+        if (modifications.isEmpty()) {
             return;
         }
 
@@ -530,7 +538,7 @@ implements QuasiChangeObserver<T> {
 
             @Override
             public boolean next() {
-                if(current + 1 < modifications.size()) {
+                if (current + 1 < modifications.size()) {
                     ++current;
                     return true;
                 } else {

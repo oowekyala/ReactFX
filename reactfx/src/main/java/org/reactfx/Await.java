@@ -1,18 +1,20 @@
 package org.reactfx;
 
-import static javafx.concurrent.WorkerStateEvent.*;
+import static javafx.concurrent.WorkerStateEvent.WORKER_STATE_CANCELLED;
+import static javafx.concurrent.WorkerStateEvent.WORKER_STATE_FAILED;
+import static javafx.concurrent.WorkerStateEvent.WORKER_STATE_SUCCEEDED;
 
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import org.reactfx.util.TriConsumer;
+import org.reactfx.util.Try;
+
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.concurrent.Task;
-
-import org.reactfx.util.TriConsumer;
-import org.reactfx.util.Try;
 
 class Await<T, F> extends EventStreamBase<Try<T>> implements AwaitingEventStream<Try<T>> {
 
@@ -72,7 +74,7 @@ class Await<T, F> extends EventStreamBase<Try<T>> implements AwaitingEventStream
         return source.subscribe(future -> {
             Guard g = pending.suspend();
             addCompletionHandler.accept(future, (result, error, cancelled) -> {
-                if(!cancelled) {
+                if (!cancelled) {
                     emit(error == null ? Try.success(result) : Try.failure(error));
                 }
                 g.close();
@@ -147,7 +149,7 @@ class AwaitLatest<T, F> extends EventStreamBase<Try<T>> implements AwaitingEvent
 
     @Override
     public ObservableBooleanValue pendingProperty() {
-        if(pending == null) {
+        if (pending == null) {
             pending = new BooleanBinding() {
                 @Override
                 protected boolean computeValue() {
@@ -168,8 +170,8 @@ class AwaitLatest<T, F> extends EventStreamBase<Try<T>> implements AwaitingEvent
         Subscription s1 = source.subscribe(future -> {
             long rev = replaceExpected(future);
             addCompletionHandler.accept(future, (result, error, cancelled) -> {
-                if(rev == revision) {
-                    if(!cancelled) {
+                if (rev == revision) {
+                    if (!cancelled) {
                         // emit before setting pending to false
                         emit(error == null ? Try.success(result) : Try.failure(error));
                     }
@@ -185,7 +187,7 @@ class AwaitLatest<T, F> extends EventStreamBase<Try<T>> implements AwaitingEvent
 
     private final long replaceExpected(F newExpected) {
         ++revision; // increment before cancelling, so that the cancellation handler is not executed
-        if(expectedFuture != null) {
+        if (expectedFuture != null) {
             canceller.accept(expectedFuture);
         }
         setExpected(newExpected);
@@ -194,7 +196,7 @@ class AwaitLatest<T, F> extends EventStreamBase<Try<T>> implements AwaitingEvent
 
     private void setExpected(F newExpected) {
         expectedFuture = newExpected;
-        if(pending != null) {
+        if (pending != null) {
             pending.invalidate();
         }
     }

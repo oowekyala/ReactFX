@@ -60,7 +60,7 @@ class ScheduledExecutorServiceTimer implements Timer {
         long expected = seq;
         pendingTimer = scheduler.apply(timeout, unit, () -> {
             eventThreadExecutor.execute(() -> {
-                if(seq == expected) {
+                if (seq == expected) {
                     action.run();
                 }
             });
@@ -69,7 +69,7 @@ class ScheduledExecutorServiceTimer implements Timer {
 
     @Override
     public final void stop() {
-        if(pendingTimer != null) {
+        if (pendingTimer != null) {
             pendingTimer.cancel(false);
         }
         ++seq;

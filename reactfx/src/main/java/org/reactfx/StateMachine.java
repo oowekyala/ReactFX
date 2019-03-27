@@ -1,6 +1,7 @@
 package org.reactfx;
 
-import static org.reactfx.util.LL.*;
+import static org.reactfx.util.LL.cons;
+import static org.reactfx.util.LL.nil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,8 +9,6 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
-
-import javafx.beans.binding.Binding;
 
 import org.reactfx.StateMachine.InitialState;
 import org.reactfx.StateMachine.ObservableStateBuilder;
@@ -19,12 +18,17 @@ import org.reactfx.StateMachine.StatefulStreamBuilderOn;
 import org.reactfx.util.LL;
 import org.reactfx.util.Tuple2;
 
+import javafx.beans.binding.Binding;
+
 public class StateMachine {
+
     public interface InitialState<S> {
+
         <I> ObservableStateBuilderOn<S, I> on(EventStream<I> input);
     }
 
     public interface ObservableStateBuilder<S> {
+
         <I> ObservableStateBuilderOn<S, I> on(EventStream<I> input);
 
         /**
@@ -44,6 +48,7 @@ public class StateMachine {
     }
 
     public interface StatefulStreamBuilder<S, O> {
+
         <I> StatefulStreamBuilderOn<S, O, I> on(EventStream<I> input);
 
         /**
@@ -62,14 +67,20 @@ public class StateMachine {
     }
 
     public interface ObservableStateBuilderOn<S, I> {
+
         ObservableStateBuilder<S> transition(BiFunction<? super S, ? super I, ? extends S> f);
+
         <O> StatefulStreamBuilder<S, O> emit(BiFunction<? super S, ? super I, Optional<O>> f);
+
         <O> StatefulStreamBuilder<S, O> transmit(BiFunction<? super S, ? super I, Tuple2<S, Optional<O>>> f);
     }
 
     public interface StatefulStreamBuilderOn<S, O, I> {
+
         StatefulStreamBuilder<S, O> transition(BiFunction<? super S, ? super I, ? extends S> f);
+
         StatefulStreamBuilder<S, O> emit(BiFunction<? super S, ? super I, Optional<O>> f);
+
         StatefulStreamBuilder<S, O> transmit(BiFunction<? super S, ? super I, Tuple2<S, Optional<O>>> f);
     }
 
@@ -79,6 +90,7 @@ public class StateMachine {
 }
 
 class InitialStateImpl<S> implements InitialState<S> {
+
     private final S initialState;
 
     public InitialStateImpl(S initialState) {
@@ -92,6 +104,7 @@ class InitialStateImpl<S> implements InitialState<S> {
 }
 
 class ObservableStateBuilderImpl<S> implements ObservableStateBuilder<S> {
+
     private final S initialState;
     private final LL<TransitionBuilder<S>> transitions;
 
@@ -117,14 +130,15 @@ class ObservableStateBuilderImpl<S> implements ObservableStateBuilder<S> {
 }
 
 class StateStream<S> extends EventStreamBase<S> {
+
     private final InputHandler[] inputHandlers;
 
     private S state;
 
     public StateStream(S initialState, LL<TransitionBuilder<S>> transitions) {
         inputHandlers = transitions.stream()
-                .map(t -> t.build(this::handleTransition))
-                .toArray(n -> new InputHandler[n]);
+                                   .map(t -> t.build(this::handleTransition))
+                                   .toArray(n -> new InputHandler[n]);
         state = initialState;
     }
 
@@ -142,6 +156,7 @@ class StateStream<S> extends EventStreamBase<S> {
 }
 
 class StatefulStreamBuilderImpl<S, O> implements StatefulStreamBuilder<S, O> {
+
     private final S initialState;
     private final LL<TransitionBuilder<S>> transitions;
     private final LL<EmissionBuilder<S, O>> emissions;
@@ -170,6 +185,7 @@ class StatefulStreamBuilderImpl<S, O> implements StatefulStreamBuilder<S, O> {
 }
 
 class StatefulStream<S, O> extends EventStreamBase<O> {
+
     private final List<InputHandler> inputHandlers;
 
     private S state;
@@ -184,15 +200,15 @@ class StatefulStream<S, O> extends EventStreamBase<O> {
 
         this.inputHandlers = new ArrayList<>(transitions.size() + emissions.size() + transmissions.size());
 
-        for(TransitionBuilder<S> tb: transitions) {
+        for (TransitionBuilder<S> tb : transitions) {
             inputHandlers.add(tb.build(this::handleTransition));
         }
 
-        for(EmissionBuilder<S, O> eb: emissions) {
+        for (EmissionBuilder<S, O> eb : emissions) {
             inputHandlers.add(eb.build(this::handleEmission));
         }
 
-        for(TransmissionBuilder<S, O> tb: transmissions) {
+        for (TransmissionBuilder<S, O> tb : transmissions) {
             inputHandlers.add(tb.build(this::handleTransmission));
         }
     }
@@ -220,6 +236,7 @@ class StatefulStream<S, O> extends EventStreamBase<O> {
 }
 
 class ObservableStateBuilderOnImpl<S, I> implements ObservableStateBuilderOn<S, I> {
+
     private final S initialState;
     private final LL<TransitionBuilder<S>> transitions;
     private final EventStream<I> input;
@@ -256,6 +273,7 @@ class ObservableStateBuilderOnImpl<S, I> implements ObservableStateBuilderOn<S, 
 }
 
 class StatefulStreamBuilderOnImpl<S, O, I> implements StatefulStreamBuilderOn<S, O, I> {
+
     private final S initialState;
     private final LL<TransitionBuilder<S>> transitions;
     private final LL<EmissionBuilder<S, O>> emissions;
@@ -299,16 +317,18 @@ class StatefulStreamBuilderOnImpl<S, O, I> implements StatefulStreamBuilderOn<S,
 }
 
 interface InputHandler {
+
     Subscription subscribeToInput();
 }
 
 class InputHandlerBuilder<S, TGT> {
+
     private final Function<
             Consumer<Function<S, TGT>>,
             InputHandler> inputSubscriberProvider;
 
     public <I> InputHandlerBuilder(EventStream<I> input,
-            BiFunction<? super S, ? super I, ? extends TGT> f) {
+                                   BiFunction<? super S, ? super I, ? extends TGT> f) {
         this.inputSubscriberProvider = publisher -> {
             return () -> input.subscribe(i -> publisher.accept(s -> f.apply(s, i)));
         };
@@ -320,22 +340,25 @@ class InputHandlerBuilder<S, TGT> {
 }
 
 class TransitionBuilder<S> extends InputHandlerBuilder<S, S> {
+
     public <I> TransitionBuilder(EventStream<I> input,
-            BiFunction<? super S, ? super I, ? extends S> f) {
+                                 BiFunction<? super S, ? super I, ? extends S> f) {
         super(input, f);
     }
 }
 
 class EmissionBuilder<S, O> extends InputHandlerBuilder<S, Optional<O>> {
+
     public <I> EmissionBuilder(EventStream<I> input,
-            BiFunction<? super S, ? super I, ? extends Optional<O>> f) {
+                               BiFunction<? super S, ? super I, ? extends Optional<O>> f) {
         super(input, f);
     }
 }
 
 class TransmissionBuilder<S, O> extends InputHandlerBuilder<S, Tuple2<S, Optional<O>>> {
+
     public <I> TransmissionBuilder(EventStream<I> input,
-            BiFunction<? super S, ? super I, ? extends Tuple2<S, Optional<O>>> f) {
+                                   BiFunction<? super S, ? super I, ? extends Tuple2<S, Optional<O>>> f) {
         super(input, f);
     }
 }

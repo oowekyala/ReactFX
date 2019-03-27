@@ -21,8 +21,8 @@ interface AccessorListMethods<E> extends List<E> {
 
     @Override
     default int indexOf(Object o) {
-        for(int i = 0; i < size(); ++i) {
-            if(Objects.equals(o, get(i))) {
+        for (int i = 0; i < size(); ++i) {
+            if (Objects.equals(o, get(i))) {
                 return i;
             }
         }
@@ -31,8 +31,8 @@ interface AccessorListMethods<E> extends List<E> {
 
     @Override
     default int lastIndexOf(Object o) {
-        for(int i = size() - 1; i >= 0; ++i) {
-            if(Objects.equals(o, get(i))) {
+        for (int i = size() - 1; i >= 0; ++i) {
+            if (Objects.equals(o, get(i))) {
                 return i;
             }
         }
@@ -73,7 +73,7 @@ interface AccessorListMethods<E> extends List<E> {
     default Object[] toArray() {
         Object[] res = new Object[size()];
         int i = 0;
-        for(E elem: this) {
+        for (E elem : this) {
             res[i++] = elem;
         }
         return res;
@@ -86,6 +86,7 @@ interface AccessorListMethods<E> extends List<E> {
 }
 
 class ListIteratorImpl<E> implements ListIterator<E> {
+
     private final List<E> list;
     private int position;
 
@@ -105,7 +106,7 @@ class ListIteratorImpl<E> implements ListIterator<E> {
 
     @Override
     public E next() {
-        if(position < list.size()) {
+        if (position < list.size()) {
             return list.get(position++);
         } else {
             throw new NoSuchElementException();
@@ -119,7 +120,7 @@ class ListIteratorImpl<E> implements ListIterator<E> {
 
     @Override
     public E previous() {
-        if(position > 0) {
+        if (position > 0) {
             return list.get(--position);
         } else {
             throw new NoSuchElementException();
@@ -153,12 +154,13 @@ class ListIteratorImpl<E> implements ListIterator<E> {
 }
 
 class SubList<E> extends AbstractList<E> {
+
     private final List<E> list;
     private final int from;
     private final int to;
 
     public SubList(List<E> list, int from, int to) {
-        if(from < 0 || from > to || to > list.size()) {
+        if (from < 0 || from > to || to > list.size()) {
             throw new IndexOutOfBoundsException("0 <= " + from + " <= " + to + " <= " + list.size());
         }
 
@@ -186,7 +188,7 @@ class SubList<E> extends AbstractList<E> {
 
     @Override
     public void add(int index, E element) {
-        if(index < 0 || index > size()) {
+        if (index < 0 || index > size()) {
             throw new IndexOutOfBoundsException(Integer.toString(index));
         }
 
@@ -200,7 +202,7 @@ class SubList<E> extends AbstractList<E> {
     }
 
     private void checkIndex(int index) {
-        if(index < 0 || index >= size()) {
+        if (index < 0 || index >= size()) {
             throw new IndexOutOfBoundsException(Integer.toString(index));
         }
     }

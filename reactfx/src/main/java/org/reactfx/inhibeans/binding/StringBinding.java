@@ -1,21 +1,20 @@
 package org.reactfx.inhibeans.binding;
 
-import javafx.beans.InvalidationListener;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableStringValue;
-
 import org.reactfx.Guard;
 import org.reactfx.value.Val;
 
 import com.sun.javafx.binding.ExpressionHelper;
+import javafx.beans.InvalidationListener;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableStringValue;
 
 /**
  * Inhibitory version of {@link javafx.beans.binding.StringBinding}.
  */
 @Deprecated
 public abstract class StringBinding
-extends javafx.beans.binding.StringBinding
-implements Binding<String> {
+        extends javafx.beans.binding.StringBinding
+        implements Binding<String> {
 
     /**
      * @deprecated Use {@link Val#suspendable(javafx.beans.value.ObservableValue)}.
@@ -23,7 +22,9 @@ implements Binding<String> {
     @Deprecated
     public static StringBinding wrap(ObservableStringValue source) {
         return new StringBinding() {
-            { bind(source); }
+            {
+                bind(source);
+            }
 
             @Override
             protected String computeValue() { return source.get(); }
@@ -36,7 +37,7 @@ implements Binding<String> {
 
     @Override
     public Guard block() {
-        if(blocked) {
+        if (blocked) {
             return Guard.EMPTY_GUARD;
         } else {
             blocked = true;
@@ -46,7 +47,7 @@ implements Binding<String> {
 
     private void release() {
         blocked = false;
-        if(fireOnRelease) {
+        if (fireOnRelease) {
             fireOnRelease = false;
             ExpressionHelper.fireValueChangedEvent(helper);
         }
@@ -54,10 +55,11 @@ implements Binding<String> {
 
     @Override
     protected final void onInvalidating() {
-        if(blocked)
+        if (blocked) {
             fireOnRelease = true;
-        else
+        } else {
             ExpressionHelper.fireValueChangedEvent(helper);
+        }
     }
 
 

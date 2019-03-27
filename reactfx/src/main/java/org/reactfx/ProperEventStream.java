@@ -12,7 +12,7 @@ import org.reactfx.util.NotificationAccumulator;
  * {@linkplain ProperObservable} methods.
  */
 public interface ProperEventStream<T>
-extends EventStream<T>, ProperObservable<Consumer<? super T>, T> {
+        extends EventStream<T>, ProperObservable<Consumer<? super T>, T> {
 
     default void emit(T value) {
         notifyObservers(value);

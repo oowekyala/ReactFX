@@ -8,21 +8,25 @@ import org.reactfx.collection.ListModificationSequence;
 import org.reactfx.collection.QuasiListChange;
 
 public interface AccumulationFacility<T, A> {
+
     A initialAccumulator(T value);
+
     A reduce(A accum, T value);
 
     interface IllegalAccumulation<T, A> extends AccumulationFacility<T, A> {
+
         @Override
         default A reduce(A accum, T value) { throw new IllegalStateException(); }
     }
 
     interface HomotypicAccumulation<T> extends AccumulationFacility<T, T> {
+
         @Override
         default T initialAccumulator(T value) { return value; }
     }
 
     interface NoAccumulation<T>
-    extends IllegalAccumulation<T, T>, HomotypicAccumulation<T> {}
+            extends IllegalAccumulation<T, T>, HomotypicAccumulation<T> {}
 
     interface Queuing<T> extends AccumulationFacility<T, Deque<T>> {
 
@@ -41,17 +45,19 @@ public interface AccumulationFacility<T, A> {
     }
 
     interface RetainLatest<T> extends HomotypicAccumulation<T> {
+
         @Override
         default T reduce(T accum, T value) { return value; }
     }
 
     interface RetainOldest<T> extends HomotypicAccumulation<T> {
+
         @Override
         default T reduce(T accum, T value) { return accum; }
     }
 
     interface ListChangeAccumulation<E>
-    extends AccumulationFacility<QuasiListChange<? extends E>, ListModificationSequence<E>> {
+            extends AccumulationFacility<QuasiListChange<? extends E>, ListModificationSequence<E>> {
 
         @Override
         default ListModificationSequence<E> initialAccumulator(

@@ -10,6 +10,7 @@ import javafx.beans.value.ObservableBooleanValue;
  * completion of an asynchronous task.
  */
 public interface AwaitingEventStream<T> extends EventStream<T> {
+
     /**
      * Indicates whether there is a pending event that will be emitted by this
      * stream in the (near) future. This may mean that an event has occurred
@@ -17,5 +18,6 @@ public interface AwaitingEventStream<T> extends EventStream<T> {
      * for a timer or completion of an asynchronous task.
      */
     ObservableBooleanValue pendingProperty();
+
     boolean isPending();
 }

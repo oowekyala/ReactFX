@@ -10,4 +10,4 @@ import org.reactfx.util.Experimental;
  */
 @Experimental
 public interface SuspenderStream<T, S extends Suspendable>
-extends EventStream<T>, Suspender<S> {}
+        extends EventStream<T>, Suspender<S> {}

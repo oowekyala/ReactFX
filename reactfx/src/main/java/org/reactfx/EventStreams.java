@@ -47,8 +47,8 @@ import javafx.stage.Window;
 public class EventStreams {
 
     private static final class Never<T>
-    extends RigidObservable<Consumer<? super T>>
-    implements EventStream<T> {}
+            extends RigidObservable<Consumer<? super T>>
+            implements EventStream<T> {}
 
     private static final EventStream<?> NEVER = new Never<Object>();
 
@@ -123,7 +123,7 @@ public class EventStreams {
             @Override
             protected Subscription observeInputs() {
                 ChangeListener<T> listener = (obs, old, val) -> {
-                    if(val != null) {
+                    if (val != null) {
                         emit(val);
                     }
                 };
@@ -134,7 +134,7 @@ public class EventStreams {
             @Override
             protected void newObserver(Consumer<? super T> subscriber) {
                 T val = observable.getValue();
-                if(val != null) {
+                if (val != null) {
                     subscriber.accept(val);
                 }
             }
@@ -174,8 +174,8 @@ public class EventStreams {
         return new EventStreamBase<ListModification<? extends T>>() {
             @Override
             protected Subscription observeInputs() {
-                return LiveList.observeChanges(list, c ->  {
-                    for(ListModification<? extends T> mod: c) {
+                return LiveList.observeChanges(list, c -> {
+                    for (ListModification<? extends T> mod : c) {
                         emit(mod);
                     }
                 });
@@ -221,18 +221,18 @@ public class EventStreams {
             protected Subscription observeInputs() {
                 InvalidationListener listener = obs -> {
                     T value = computeValue.get();
-                    if(value != previousValue) {
+                    if (value != previousValue) {
                         previousValue = value;
                         emit(value);
                     }
                 };
-                for(Observable dep: dependencies) {
+                for (Observable dep : dependencies) {
                     dep.addListener(listener);
                 }
                 previousValue = computeValue.get();
 
                 return () -> {
-                    for(Observable dep: dependencies) {
+                    for (Observable dep : dependencies) {
                         dep.removeListener(listener);
                     }
                 };
@@ -282,7 +282,7 @@ public class EventStreams {
     }
 
     public static <T extends Event> EventStream<T> eventsOf(
-        Window window, EventType<T> eventType) {
+            Window window, EventType<T> eventType) {
         return new EventStreamBase<T>() {
             @Override
             protected Subscription observeInputs() {
@@ -349,7 +349,7 @@ public class EventStreams {
      * release associated resources, it suffices to unsubscribe from the
      * returned stream.
      *
-     * @param scheduler scheduler used to schedule periodic emissions.
+     * @param scheduler           scheduler used to schedule periodic emissions.
      * @param eventThreadExecutor single-thread executor used to emit the ticks.
      */
     public static EventStream<?> ticks(
@@ -367,11 +367,13 @@ public class EventStreams {
             }
         };
     }
+
     /**
      * Returns a {@link #ticks(Duration)} EventStream whose timer restarts whenever
      * impulse emits an event.
+     *
      * @param interval - the amount of time that passes until this stream emits its next tick
-     * @param impulse - the EventStream that resets this EventStream's internal timer
+     * @param impulse  - the EventStream that resets this EventStream's internal timer
      */
     public static EventStream<?> restartableTicks(Duration interval, EventStream<?> impulse) {
         return new EventStreamBase<Void>() {
@@ -393,8 +395,9 @@ public class EventStreams {
      * Returns a {@link #ticks0(Duration)} EventStream whose timer restarts whenever
      * impulse emits an event. Note: since {@link #ticks0(Duration)} is used, restarting
      * the timer will make the returned EventStream immediately emit a new tick.
+     *
      * @param interval - the amount of time that passes until this stream emits its next tick
-     * @param impulse - the EventStream that resets this EventStream's internal timer
+     * @param impulse  - the EventStream that resets this EventStream's internal timer
      */
     public static EventStream<?> restartableTicks0(Duration interval, EventStream<?> impulse) {
         return new EventStreamBase<Void>() {
@@ -441,7 +444,7 @@ public class EventStreams {
     public static EventStream<Long> animationFrames() {
         return animationTicks()
                 .accumulate(t(0L, -1L), (state, now) -> state.map((d, last) -> {
-                        return t(last == -1L ? 0L : now - last, now);
+                    return t(last == -1L ? 0L : now - last, now);
                 }))
                 .map(t -> t._1);
     }
@@ -484,8 +487,9 @@ public class EventStreams {
      * A more general version of {@link #merge(ObservableSet)} for a set of
      * arbitrary element type and a function to obtain an event stream from
      * the element.
+     *
      * @param set observable set of elements
-     * @param f function to obtain an event stream from an element
+     * @param f   function to obtain an event stream from an element
      */
     public static <T, U> EventStream<U> merge(
             ObservableSet<? extends T> set,
@@ -517,12 +521,18 @@ public class EventStreams {
                 pocketA.clear();
                 pocketB.clear();
                 return Subscription.multi(
-                        srcA.subscribe(a -> { pocketA.set(a); tryEmit(); }),
-                        srcB.subscribe(b -> { pocketB.set(b); tryEmit(); }));
+                        srcA.subscribe(a -> {
+                            pocketA.set(a);
+                            tryEmit();
+                        }),
+                        srcB.subscribe(b -> {
+                            pocketB.set(b);
+                            tryEmit();
+                        }));
             }
 
             protected void tryEmit() {
-                if(pocketA.hasValue() && pocketB.hasValue()) {
+                if (pocketA.hasValue() && pocketB.hasValue()) {
                     emit(t(pocketA.getAndClear(), pocketB.getAndClear()));
                 }
             }
@@ -541,13 +551,22 @@ public class EventStreams {
                 pocketB.clear();
                 pocketC.clear();
                 return Subscription.multi(
-                        srcA.subscribe(a -> { pocketA.set(a); tryEmit(); }),
-                        srcB.subscribe(b -> { pocketB.set(b); tryEmit(); }),
-                        srcC.subscribe(c -> { pocketC.set(c); tryEmit(); }));
+                        srcA.subscribe(a -> {
+                            pocketA.set(a);
+                            tryEmit();
+                        }),
+                        srcB.subscribe(b -> {
+                            pocketB.set(b);
+                            tryEmit();
+                        }),
+                        srcC.subscribe(c -> {
+                            pocketC.set(c);
+                            tryEmit();
+                        }));
             }
 
             protected void tryEmit() {
-                if(pocketA.hasValue() && pocketB.hasValue() && pocketC.hasValue()) {
+                if (pocketA.hasValue() && pocketB.hasValue() && pocketC.hasValue()) {
                     emit(t(pocketA.getAndClear(), pocketB.getAndClear(), pocketC.getAndClear()));
                 }
             }
@@ -566,12 +585,18 @@ public class EventStreams {
                 pocketA.clear();
                 pocketB.clear();
                 return Subscription.multi(
-                        srcA.subscribe(a -> { pocketA.set(a); tryEmit(); }),
-                        srcB.subscribe(b -> { pocketB.set(b); tryEmit(); }));
+                        srcA.subscribe(a -> {
+                            pocketA.set(a);
+                            tryEmit();
+                        }),
+                        srcB.subscribe(b -> {
+                            pocketB.set(b);
+                            tryEmit();
+                        }));
             }
 
             void tryEmit() {
-                if(pocketA.hasValue() && pocketB.hasValue()) {
+                if (pocketA.hasValue() && pocketB.hasValue()) {
                     emit(t(pocketA.get(), pocketB.get()));
                 }
             }
@@ -593,13 +618,22 @@ public class EventStreams {
                 pocketB.clear();
                 pocketC.clear();
                 return Subscription.multi(
-                        srcA.subscribe(a -> { pocketA.set(a); tryEmit(); }),
-                        srcB.subscribe(b -> { pocketB.set(b); tryEmit(); }),
-                        srcC.subscribe(c -> { pocketC.set(c); tryEmit(); }));
+                        srcA.subscribe(a -> {
+                            pocketA.set(a);
+                            tryEmit();
+                        }),
+                        srcB.subscribe(b -> {
+                            pocketB.set(b);
+                            tryEmit();
+                        }),
+                        srcC.subscribe(c -> {
+                            pocketC.set(c);
+                            tryEmit();
+                        }));
             }
 
             void tryEmit() {
-                if(pocketA.hasValue() && pocketB.hasValue() && pocketC.hasValue()) {
+                if (pocketA.hasValue() && pocketB.hasValue() && pocketC.hasValue()) {
                     emit(t(pocketA.get(), pocketB.get(), pocketC.get()));
                 }
             }
@@ -624,18 +658,30 @@ public class EventStreams {
                 pocketC.clear();
                 pocketD.clear();
                 return Subscription.multi(
-                        srcA.subscribe(a -> { pocketA.set(a); tryEmit(); }),
-                        srcB.subscribe(b -> { pocketB.set(b); tryEmit(); }),
-                        srcC.subscribe(c -> { pocketC.set(c); tryEmit(); }),
-                        srcD.subscribe(d -> { pocketD.set(d); tryEmit(); }));
+                        srcA.subscribe(a -> {
+                            pocketA.set(a);
+                            tryEmit();
+                        }),
+                        srcB.subscribe(b -> {
+                            pocketB.set(b);
+                            tryEmit();
+                        }),
+                        srcC.subscribe(c -> {
+                            pocketC.set(c);
+                            tryEmit();
+                        }),
+                        srcD.subscribe(d -> {
+                            pocketD.set(d);
+                            tryEmit();
+                        }));
             }
 
             void tryEmit() {
-                if(pocketA.hasValue() && pocketB.hasValue()
+                if (pocketA.hasValue() && pocketB.hasValue()
                         && pocketC.hasValue() && pocketD.hasValue()) {
 
                     emit(t(pocketA.get(), pocketB.get(),
-                            pocketC.get(), pocketD.get()));
+                           pocketC.get(), pocketD.get()));
                 }
             }
         };
@@ -662,20 +708,35 @@ public class EventStreams {
                 pocketD.clear();
                 pocketE.clear();
                 return Subscription.multi(
-                        srcA.subscribe(a -> { pocketA.set(a); tryEmit(); }),
-                        srcB.subscribe(b -> { pocketB.set(b); tryEmit(); }),
-                        srcC.subscribe(c -> { pocketC.set(c); tryEmit(); }),
-                        srcD.subscribe(d -> { pocketD.set(d); tryEmit(); }),
-                        srcE.subscribe(e -> { pocketE.set(e); tryEmit(); }));
+                        srcA.subscribe(a -> {
+                            pocketA.set(a);
+                            tryEmit();
+                        }),
+                        srcB.subscribe(b -> {
+                            pocketB.set(b);
+                            tryEmit();
+                        }),
+                        srcC.subscribe(c -> {
+                            pocketC.set(c);
+                            tryEmit();
+                        }),
+                        srcD.subscribe(d -> {
+                            pocketD.set(d);
+                            tryEmit();
+                        }),
+                        srcE.subscribe(e -> {
+                            pocketE.set(e);
+                            tryEmit();
+                        }));
             }
 
             void tryEmit() {
-                if(pocketA.hasValue() && pocketB.hasValue()
+                if (pocketA.hasValue() && pocketB.hasValue()
                         && pocketC.hasValue() && pocketD.hasValue()
                         && pocketE.hasValue()) {
 
                     emit(t(pocketA.get(), pocketB.get(), pocketC.get(),
-                            pocketD.get(), pocketE.get()));
+                           pocketD.get(), pocketE.get()));
                 }
             }
         };
@@ -705,21 +766,39 @@ public class EventStreams {
                 pocketE.clear();
                 pocketF.clear();
                 return Subscription.multi(
-                        srcA.subscribe(a -> { pocketA.set(a); tryEmit(); }),
-                        srcB.subscribe(b -> { pocketB.set(b); tryEmit(); }),
-                        srcC.subscribe(c -> { pocketC.set(c); tryEmit(); }),
-                        srcD.subscribe(d -> { pocketD.set(d); tryEmit(); }),
-                        srcE.subscribe(e -> { pocketE.set(e); tryEmit(); }),
-                        srcF.subscribe(f -> { pocketF.set(f); tryEmit(); }));
+                        srcA.subscribe(a -> {
+                            pocketA.set(a);
+                            tryEmit();
+                        }),
+                        srcB.subscribe(b -> {
+                            pocketB.set(b);
+                            tryEmit();
+                        }),
+                        srcC.subscribe(c -> {
+                            pocketC.set(c);
+                            tryEmit();
+                        }),
+                        srcD.subscribe(d -> {
+                            pocketD.set(d);
+                            tryEmit();
+                        }),
+                        srcE.subscribe(e -> {
+                            pocketE.set(e);
+                            tryEmit();
+                        }),
+                        srcF.subscribe(f -> {
+                            pocketF.set(f);
+                            tryEmit();
+                        }));
             }
 
             void tryEmit() {
-                if(pocketA.hasValue() && pocketB.hasValue()
+                if (pocketA.hasValue() && pocketB.hasValue()
                         && pocketC.hasValue() && pocketD.hasValue()
                         && pocketE.hasValue() && pocketF.hasValue()) {
 
                     emit(t(pocketA.get(), pocketB.get(), pocketC.get(),
-                            pocketD.get(), pocketE.get(), pocketF.get()));
+                           pocketD.get(), pocketE.get(), pocketF.get()));
                 }
             }
         };
@@ -732,6 +811,7 @@ public class EventStreams {
      *
      * @param input      Boolean stream to observe
      * @param vetoPeriod Duration within which "true" values can be vetoed
+     *
      * @see #vetoableNo(EventStream, Duration)
      * @see EventStream#vetoable(Predicate, BiPredicate, BiFunction, Duration)
      * @since RFXX
@@ -763,6 +843,7 @@ public class EventStreams {
      *
      * @param input      Stream to observe
      * @param vetoPeriod Duration within which null values can be vetoed
+     *
      * @see EventStream#vetoable(Predicate, BiPredicate, BiFunction, Duration)
      * @since RFXX
      */
@@ -771,23 +852,27 @@ public class EventStreams {
     }
 
 
-
     private static class Pocket<T> {
+
         private boolean hasValue = false;
         private T value = null;
 
         public boolean hasValue() { return hasValue; }
+
         public void set(T value) {
             this.value = value;
             hasValue = true;
         }
+
         public T get() {
             return value;
         }
+
         public void clear() {
             hasValue = false;
             value = null;
         }
+
         public T getAndClear() {
             T res = get();
             clear();
@@ -796,13 +881,15 @@ public class EventStreams {
     }
 
     private static class ExclusivePocket<T> extends Pocket<T> {
+
         @Override
         public final void set(T a) {
-            if(hasValue()) {
+            if (hasValue()) {
                 throw new IllegalStateException("Value arrived out of order: " + a);
             } else {
                 super.set(a);
             }
-        };
+        }
+
     }
 }

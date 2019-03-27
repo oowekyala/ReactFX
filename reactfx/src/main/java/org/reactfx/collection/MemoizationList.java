@@ -3,33 +3,43 @@ package org.reactfx.collection;
 import java.util.List;
 import java.util.Optional;
 
-import javafx.collections.ObservableList;
-import javafx.scene.control.IndexRange;
-
 import org.reactfx.Subscription;
 import org.reactfx.util.Lists;
 import org.reactfx.util.SparseList;
 
+import javafx.collections.ObservableList;
+import javafx.scene.control.IndexRange;
+
 public interface MemoizationList<E> extends LiveList<E> {
+
     LiveList<E> memoizedItems();
+
     boolean isMemoized(int index);
+
     Optional<E> getIfMemoized(int index);
+
     int getMemoizedCount();
+
     int getMemoizedCountBefore(int position);
+
     int getMemoizedCountAfter(int position);
+
     void forget(int from, int to);
+
     int indexOfMemoizedItem(int index);
+
     IndexRange getMemoizedItemsRange();
+
     void force(int from, int to);
 }
 
 class MemoizationListImpl<E>
-extends LiveListBase<E>
-implements MemoizationList<E>, UnmodifiableByDefaultLiveList<E> {
+        extends LiveListBase<E>
+        implements MemoizationList<E>, UnmodifiableByDefaultLiveList<E> {
 
     private class MemoizedView
-    extends LiveListBase<E>
-    implements UnmodifiableByDefaultLiveList<E> {
+            extends LiveListBase<E>
+            implements UnmodifiableByDefaultLiveList<E> {
 
         @Override
         protected Subscription observeInputs() {
@@ -71,12 +81,12 @@ implements MemoizationList<E>, UnmodifiableByDefaultLiveList<E> {
     protected Subscription observeInputs() {
         sparseList.insertVoid(0, source.size());
         return LiveList.<E>observeQuasiChanges(source, this::sourceChanged)
-            .and(sparseList::clear);
+                .and(sparseList::clear);
     }
 
     private void sourceChanged(QuasiListChange<? extends E> qc) {
         ListChangeAccumulator<E> acc = new ListChangeAccumulator<>();
-        for(QuasiListModification<? extends E> mod: qc) {
+        for (QuasiListModification<? extends E> mod : qc) {
             int from = mod.getFrom();
             int removedSize = mod.getRemovedSize();
             int memoFrom = sparseList.getPresentCountBefore(from);
@@ -91,14 +101,14 @@ implements MemoizationList<E>, UnmodifiableByDefaultLiveList<E> {
 
     @Override
     public E get(int index) {
-        if(!isObservingInputs()) { // memoization is off
+        if (!isObservingInputs()) { // memoization is off
             return source.get(index);
-        } else if(sparseList.isPresent(index)) {
+        } else if (sparseList.isPresent(index)) {
             return sparseList.getOrThrow(index);
         } else {
             E elem = source.get(index); // may cause recursive get(), so we
-                                        // need to check again for absence
-            if(sparseList.setIfAbsent(index, elem)) {
+            // need to check again for absence
+            if (sparseList.setIfAbsent(index, elem)) {
                 memoizedItems.fireElemInsertion(
                         sparseList.getPresentCountBefore(index));
             }
@@ -108,18 +118,18 @@ implements MemoizationList<E>, UnmodifiableByDefaultLiveList<E> {
 
     @Override
     public void force(int from, int to) {
-        if(!isObservingInputs()) { // memoization is off
+        if (!isObservingInputs()) { // memoization is off
             throw new IllegalStateException(
                     "Cannot force items when memoization is off."
-                    + " To turn memoization on, you have to be observing this"
-                    + " list or its memoizedItems.");
+                            + " To turn memoization on, you have to be observing this"
+                            + " list or its memoizedItems.");
         }
 
         Lists.checkRange(from, to, size());
-        for(int i = from; i < to; ++i) {
-            if(!sparseList.isPresent(i)) {
+        for (int i = from; i < to; ++i) {
+            if (!sparseList.isPresent(i)) {
                 E elem = source.get(i);
-                if(sparseList.setIfAbsent(i, elem)) {
+                if (sparseList.setIfAbsent(i, elem)) {
                     int presentBefore = sparseList.getPresentCountBefore(i);
                     memoizedItems.prepareNotifications(ProperLiveList.elemInsertion(presentBefore));
                 }
@@ -147,24 +157,24 @@ implements MemoizationList<E>, UnmodifiableByDefaultLiveList<E> {
     public Optional<E> getIfMemoized(int index) {
         Lists.checkIndex(index, size());
         return isObservingInputs()
-                ? sparseList.get(index)
-                : Optional.empty();
+               ? sparseList.get(index)
+               : Optional.empty();
     }
 
     @Override
     public int getMemoizedCountBefore(int position) {
         Lists.checkPosition(position, size());
         return isObservingInputs()
-                ? sparseList.getPresentCountBefore(position)
-                : 0;
+               ? sparseList.getPresentCountBefore(position)
+               : 0;
     }
 
     @Override
     public int getMemoizedCountAfter(int position) {
         Lists.checkPosition(position, size());
         return isObservingInputs()
-                ? sparseList.getPresentCountAfter(position)
-                : 0;
+               ? sparseList.getPresentCountAfter(position)
+               : 0;
     }
 
     @Override
@@ -174,11 +184,11 @@ implements MemoizationList<E>, UnmodifiableByDefaultLiveList<E> {
 
     @Override
     public void forget(int from, int to) {
-        if(!isObservingInputs()) { // memoization is off
+        if (!isObservingInputs()) { // memoization is off
             throw new IllegalStateException(
                     "There is nothing to forget, because memoization is off."
-                    + " To turn memoization on, you have to be observing this"
-                    + " list or its memoizedItems.");
+                            + " To turn memoization on, you have to be observing this"
+                            + " list or its memoizedItems.");
         }
 
         Lists.checkRange(from, to, size());

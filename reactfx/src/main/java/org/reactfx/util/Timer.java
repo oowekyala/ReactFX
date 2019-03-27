@@ -13,6 +13,7 @@ package org.reactfx.util;
  * {@link #stop()}.
  */
 public interface Timer {
+
     /**
      * Schedules the associated action to be executed after the associated
      * delay. If the action is already scheduled but hasn't been executed yet,

@@ -1,10 +1,11 @@
 package org.reactfx.util;
 
-import static org.reactfx.util.Tuples.*;
+import static org.reactfx.util.Tuples.t;
 
 import java.util.Objects;
 
 public class Tuple5<A, B, C, D, E> {
+
     public final A _1;
     public final B _2;
     public final C _3;
@@ -20,9 +21,13 @@ public class Tuple5<A, B, C, D, E> {
     }
 
     public A get1() { return _1; }
+
     public B get2() { return _2; }
+
     public C get3() { return _3; }
+
     public D get4() { return _4; }
+
     public E get5() { return _5; }
 
     public Tuple5<A, B, C, D, E> update1(A a) {
@@ -59,7 +64,7 @@ public class Tuple5<A, B, C, D, E> {
 
     @Override
     public boolean equals(Object other) {
-        if(other instanceof Tuple5) {
+        if (other instanceof Tuple5) {
             Tuple5<?, ?, ?, ?, ?> that = (Tuple5<?, ?, ?, ?, ?>) other;
             return Objects.equals(this._1, that._1)
                     && Objects.equals(this._2, that._2)
@@ -79,11 +84,11 @@ public class Tuple5<A, B, C, D, E> {
     @Override
     public String toString() {
         return "("
-                + Objects.toString(_1) + ", "
-                + Objects.toString(_2) + ", "
-                + Objects.toString(_3) + ", "
-                + Objects.toString(_4) + ", "
-                + Objects.toString(_5)
+                + _1 + ", "
+                + _2 + ", "
+                + _3 + ", "
+                + _4 + ", "
+                + _5
                 + ")";
     }
 }

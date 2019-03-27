@@ -26,12 +26,12 @@ public interface Suspendable {
      * completely, depending on the concrete implementation.
      *
      * @return a {@linkplain Guard} instance that can be released to end
-     * suspension. In case of suspended notifications, releasing the returned
-     * {@linkplain Guard} will trigger delivery of queued or accumulated
-     * notifications, if any.
+     *     suspension. In case of suspended notifications, releasing the returned
+     *     {@linkplain Guard} will trigger delivery of queued or accumulated
+     *     notifications, if any.
      *
-     * <p>The returned {@code Guard} is {@code AutoCloseable}, which makes it
-     * convenient to use in try-with-resources.
+     *     <p>The returned {@code Guard} is {@code AutoCloseable}, which makes it
+     *     convenient to use in try-with-resources.
      */
     Guard suspend();
 
@@ -46,8 +46,10 @@ public interface Suspendable {
      * </pre>
      */
     default void suspendWhile(Runnable r) {
-        try(Guard g = suspend()) { r.run(); }
-    };
+        try (Guard g = suspend()) {
+            r.run();
+        }
+    }
 
     /**
      * Runs the given computation while suspended.
@@ -70,7 +72,9 @@ public interface Suspendable {
      * @return the result produced by the given supplier {@code f}.
      */
     default <U> U suspendWhile(Supplier<U> f) {
-        try(Guard g = suspend()) { return f.get(); }
+        try (Guard g = suspend()) {
+            return f.get();
+        }
     }
 
     /**
@@ -78,10 +82,10 @@ public interface Suspendable {
      * {@code condition} is {@code true}.
      *
      * @return A {@linkplain Subscription} that can be used to stop observing
-     * {@code condition} and stop suspending this {@linkplain Suspendable} based
-     * on {@code condition}. If at the time of unsubscribing the returned
-     * {@linkplain Subscription} this {@linkplain Suspendable} was suspended due
-     * to {@code condition} being {@code true}, it will be resumed.
+     *     {@code condition} and stop suspending this {@linkplain Suspendable} based
+     *     on {@code condition}. If at the time of unsubscribing the returned
+     *     {@linkplain Subscription} this {@linkplain Suspendable} was suspended due
+     *     to {@code condition} being {@code true}, it will be resumed.
      */
     default Subscription suspendWhen(ObservableValue<Boolean> condition) {
         return new Subscription() {
@@ -89,8 +93,8 @@ public interface Suspendable {
             private Guard suspensionGuard = null;
 
             private final Subscription sub = EventStreams.valuesOf(condition)
-                    .subscribe(this::suspendSource)
-                    .and(this::resumeSource);
+                                                         .subscribe(this::suspendSource)
+                                                         .and(this::resumeSource);
 
             @Override
             public void unsubscribe() {
@@ -98,7 +102,7 @@ public interface Suspendable {
             }
 
             private void suspendSource(boolean suspend) {
-                if(suspend) {
+                if (suspend) {
                     suspendSource();
                 } else {
                     resumeSource();
@@ -106,13 +110,13 @@ public interface Suspendable {
             }
 
             private void suspendSource() {
-                if(suspensionGuard == null) {
+                if (suspensionGuard == null) {
                     suspensionGuard = Suspendable.this.suspend();
                 }
             }
 
             private void resumeSource() {
-                if(suspensionGuard != null) {
+                if (suspensionGuard != null) {
                     Guard toClose = suspensionGuard;
                     suspensionGuard = null;
                     toClose.close();
@@ -130,19 +134,23 @@ public interface Suspendable {
      * {@linkplain Suspendable}s are suspended, in the given order. When
      * resumed, all participating {@linkplain Suspendable}s are resumed, in
      * reverse order.
-     *
      */
     static Suspendable combine(Suspendable... suspendables) {
-        switch(suspendables.length) {
-            case 0: throw new IllegalArgumentException("Must invoke with at least 1 argument");
-            case 1: return suspendables[0];
-            case 2: return new BiSuspendable(suspendables[0], suspendables[1]);
-            default: return new MultiSuspendable(suspendables);
+        switch (suspendables.length) {
+        case 0:
+            throw new IllegalArgumentException("Must invoke with at least 1 argument");
+        case 1:
+            return suspendables[0];
+        case 2:
+            return new BiSuspendable(suspendables[0], suspendables[1]);
+        default:
+            return new MultiSuspendable(suspendables);
         }
     }
 }
 
 class BiSuspendable implements Suspendable {
+
     private final Suspendable s1;
     private final Suspendable s2;
 
@@ -158,6 +166,7 @@ class BiSuspendable implements Suspendable {
 }
 
 class MultiSuspendable implements Suspendable {
+
     private final Suspendable[] suspendables;
 
     public MultiSuspendable(Suspendable... suspendables) {
@@ -167,7 +176,7 @@ class MultiSuspendable implements Suspendable {
     @Override
     public Guard suspend() {
         Guard[] guards = Arrays.stream(suspendables)
-                .map(g -> g.suspend()).toArray(n -> new Guard[n]);
+                               .map(g -> g.suspend()).toArray(n -> new Guard[n]);
         return new MultiGuard(guards);
     }
 }

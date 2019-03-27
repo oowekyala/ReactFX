@@ -1,12 +1,13 @@
 package org.reactfx.collection;
 
-import javafx.beans.value.ObservableValue;
-
 import org.reactfx.Subscription;
 import org.reactfx.util.Lists;
 import org.reactfx.value.Val;
 
+import javafx.beans.value.ObservableValue;
+
 class ValAsList<T> extends LiveListBase<T> implements UnmodifiableByDefaultLiveList<T> {
+
     private final ObservableValue<T> underlying;
 
     ValAsList(ObservableValue<T> underlying) {
@@ -27,10 +28,10 @@ class ValAsList<T> extends LiveListBase<T> implements UnmodifiableByDefaultLiveL
     @Override
     protected Subscription observeInputs() {
         return Val.observeChanges(underlying, (obs, oldVal, newVal) -> {
-            if(oldVal == null) {
+            if (oldVal == null) {
                 assert newVal != null;
                 fireElemInsertion(0);
-            } else if(newVal == null) {
+            } else if (newVal == null) {
                 assert oldVal != null; // superfluous, just for symmetry
                 fireElemRemoval(0, oldVal);
             } else {

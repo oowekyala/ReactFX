@@ -1,8 +1,9 @@
 package org.reactfx.util;
 
-import static org.reactfx.util.Either.*;
-import static org.reactfx.util.LL.*;
-import static org.reactfx.util.Tuples.*;
+import static org.reactfx.util.Either.left;
+import static org.reactfx.util.Either.right;
+import static org.reactfx.util.LL.cons;
+import static org.reactfx.util.Tuples.t;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ public abstract class FingerTree<T, S> {
         public BiIndex locate(
                 BiFunction<? super S, Integer, Either<Integer, Integer>> navigate,
                 int position) {
-            if(navigate.apply(getSummary(), position).isRight()) {
+            if (navigate.apply(getSummary(), position).isRight()) {
                 throw new IndexOutOfBoundsException("Position " + position + " is out of bounds");
             }
             return locate0(navigate, position);
@@ -63,8 +64,8 @@ public abstract class FingerTree<T, S> {
         public Tuple3<FingerTree<T, S>, T, FingerTree<T, S>> splitAt(int leaf) {
             Lists.checkIndex(leaf, getLeafCount());
             return split0(leaf).map((l, r0) ->
-                   r0.split0(1).map((m, r) ->
-                           t(l, m.getLeaf0(0), r)));
+                                            r0.split0(1).map((m, r) ->
+                                                                     t(l, m.getLeaf0(0), r)));
         }
 
         public Tuple3<FingerTree<T, S>, Tuple2<T, Integer>, FingerTree<T, S>> split(
@@ -79,7 +80,7 @@ public abstract class FingerTree<T, S> {
         public Tuple3<FingerTree<T, S>, Tuple2<T, Integer>, FingerTree<T, S>> split(
                 BiFunction<? super S, Integer, Either<Integer, Integer>> navigate,
                 int position) {
-            if(navigate.apply(getSummary(), position).isRight()) {
+            if (navigate.apply(getSummary(), position).isRight()) {
                 throw new IndexOutOfBoundsException("Position " + position + " is out of bounds");
             }
 
@@ -93,7 +94,7 @@ public abstract class FingerTree<T, S> {
         }
 
         final NonEmptyFingerTree<T, S> appendTree(FingerTree<T, S> right) {
-            if(this.getDepth() >= right.getDepth()) {
+            if (this.getDepth() >= right.getDepth()) {
                 return appendLte(right).unify(
                         Function.identity(),
                         two -> two.map(FingerTree::branch));
@@ -103,7 +104,7 @@ public abstract class FingerTree<T, S> {
         }
 
         final NonEmptyFingerTree<T, S> prependTree(FingerTree<T, S> left) {
-            if(this.getDepth() >= left.getDepth()) {
+            if (this.getDepth() >= left.getDepth()) {
                 return prependLte(left).unify(
                         Function.identity(),
                         two -> two.map(FingerTree::branch));
@@ -125,6 +126,7 @@ public abstract class FingerTree<T, S> {
                 int position);
 
         abstract Either<? extends NonEmptyFingerTree<T, S>, Tuple2<NonEmptyFingerTree<T, S>, NonEmptyFingerTree<T, S>>> appendLte(FingerTree<T, S> right);
+
         abstract Either<? extends NonEmptyFingerTree<T, S>, Tuple2<NonEmptyFingerTree<T, S>, NonEmptyFingerTree<T, S>>> prependLte(FingerTree<T, S> left);
     }
 
@@ -136,7 +138,7 @@ public abstract class FingerTree<T, S> {
 
         @Override
         public String toString() {
-            return"<emtpy tree>";
+            return "<emtpy tree>";
         }
 
         @Override
@@ -145,14 +147,12 @@ public abstract class FingerTree<T, S> {
         }
 
         @Override
-        public
-        int getDepth() {
+        public int getDepth() {
             return 0;
         }
 
         @Override
-        public
-        int getLeafCount() {
+        public int getLeafCount() {
             return 0;
         }
 
@@ -182,8 +182,7 @@ public abstract class FingerTree<T, S> {
         }
 
         @Override
-        public
-        Optional<S> getSummaryOpt() {
+        public Optional<S> getSummaryOpt() {
             return Optional.empty();
         }
 
@@ -238,6 +237,7 @@ public abstract class FingerTree<T, S> {
     }
 
     private static class Leaf<T, S> extends NonEmptyFingerTree<T, S> {
+
         private final T data;
         private final S summary;
 
@@ -322,7 +322,7 @@ public abstract class FingerTree<T, S> {
             assert 0 <= startLeaf;
             assert endLeaf <= 1;
 
-            if(startLeaf < endLeaf) {
+            if (startLeaf < endLeaf) {
                 return reduction.apply(acc, data);
             } else {
                 return acc;
@@ -358,7 +358,7 @@ public abstract class FingerTree<T, S> {
             assert Lists.isNonEmptyRange(startPosition, endPosition, measure(metric))
                     : "Didn't expect empty range [" + startPosition + ", " + endPosition + ")";
 
-            if(startPosition == 0 && endPosition == measure(metric)) {
+            if (startPosition == 0 && endPosition == measure(metric)) {
                 return summary;
             } else {
                 return subSummary.apply(data, startPosition, endPosition);
@@ -370,8 +370,8 @@ public abstract class FingerTree<T, S> {
                 FingerTree<T, S> right) {
             assert right.getDepth() <= this.getDepth();
             return right.caseEmpty()
-                    .mapLeft(emptyRight -> this)
-                    .mapRight(nonEmptyRight -> t(this, nonEmptyRight));
+                        .mapLeft(emptyRight -> this)
+                        .mapRight(nonEmptyRight -> t(this, nonEmptyRight));
         }
 
         @Override
@@ -379,14 +379,14 @@ public abstract class FingerTree<T, S> {
                 FingerTree<T, S> left) {
             assert left.getDepth() <= this.getDepth();
             return left.caseEmpty()
-                    .mapLeft(emptyLeft -> this)
-                    .mapRight(nonEmptyLeft -> t(nonEmptyLeft, this));
+                       .mapLeft(emptyLeft -> this)
+                       .mapRight(nonEmptyLeft -> t(nonEmptyLeft, this));
         }
 
         @Override
         Tuple2<FingerTree<T, S>, FingerTree<T, S>> split0(int beforeLeaf) {
             assert Lists.isValidPosition(beforeLeaf, 1);
-            if(beforeLeaf == 0) {
+            if (beforeLeaf == 0) {
                 return t(empty(), this);
             } else {
                 return t(this, empty());
@@ -397,13 +397,14 @@ public abstract class FingerTree<T, S> {
         BiIndex locate0(
                 BiFunction<? super S, Integer, Either<Integer, Integer>> navigate,
                 int position) {
-            return navigate.apply(summary,  position).unify(
+            return navigate.apply(summary, position).unify(
                     inl -> new BiIndex(0, inl),
                     inr -> { throw new AssertionError("Unreachable code"); });
         }
     }
 
     private static final class Branch<T, S> extends NonEmptyFingerTree<T, S> {
+
         private final Cons<NonEmptyFingerTree<T, S>> children;
         private final int depth;
         private final int leafCount;
@@ -416,10 +417,10 @@ public abstract class FingerTree<T, S> {
             int headDepth = head.getDepth();
             assert children.all(n -> n.getDepth() == headDepth);
             this.children = children;
-            this.depth  = 1 + headDepth;
+            this.depth = 1 + headDepth;
             this.leafCount = children.fold(0, (s, n) -> s + n.getLeafCount());
             this.summary = children.mapReduce1(
-                    NonEmptyFingerTree<T, S>::getSummary,
+                    NonEmptyFingerTree::getSummary,
                     semigroup::reduce);
         }
 
@@ -439,7 +440,7 @@ public abstract class FingerTree<T, S> {
         }
 
         @Override
-        public List<T> asList()  {
+        public List<T> asList() {
             return subList0(0, leafCount);
         }
 
@@ -454,14 +455,14 @@ public abstract class FingerTree<T, S> {
         private List<T> subList(int from, int to) {
             int len = to - from;
 
-            if(2*len >= getLeafCount()) {
+            if (2 * len >= getLeafCount()) {
                 return subList0(from, to);
             } else {
                 FingerTree<T, S> tree = this;
-                if(2*(getLeafCount() - to) > len) {
+                if (2 * (getLeafCount() - to) > len) {
                     tree = tree.split(to)._1;
                 }
-                if(2*from > len) {
+                if (2 * from > len) {
                     tree = tree.split(from)._2;
                     to -= from;
                     from = 0;
@@ -507,23 +508,38 @@ public abstract class FingerTree<T, S> {
                         private int position = from + pos; // position within this finger tree
                         private int topOffset = 0; // absolute offset of top of the stack relative to this finger tree
                         private Stack<NonEmptyFingerTree<T, S>> stack = new Stack<>();
-                        { stack.push(Branch.this); }
 
-                        @Override public boolean hasNext() { return position < to; }
-                        @Override public boolean hasPrevious() { return position > from; }
-                        @Override public int nextIndex() { return position - from; }
-                        @Override public int previousIndex() { return position - from - 1; }
+                        {
+                            stack.push(Branch.this);
+                        }
 
-                        @Override public void remove() { throw new UnsupportedOperationException(); }
-                        @Override public void set(T e) { throw new UnsupportedOperationException(); }
-                        @Override public void add(T e) { throw new UnsupportedOperationException(); }
+                        @Override
+                        public boolean hasNext() { return position < to; }
+
+                        @Override
+                        public boolean hasPrevious() { return position > from; }
+
+                        @Override
+                        public int nextIndex() { return position - from; }
+
+                        @Override
+                        public int previousIndex() { return position - from - 1; }
+
+                        @Override
+                        public void remove() { throw new UnsupportedOperationException(); }
+
+                        @Override
+                        public void set(T e) { throw new UnsupportedOperationException(); }
+
+                        @Override
+                        public void add(T e) { throw new UnsupportedOperationException(); }
 
                         @Override
                         public T next() {
-                            if(position == topOffset + stack.peek().getLeafCount()) {
+                            if (position == topOffset + stack.peek().getLeafCount()) {
                                 up();
                                 return next();
-                            } else if(stack.peek().getDepth() <= dd) {
+                            } else if (stack.peek().getDepth() <= dd) {
                                 return stack.peek().getLeaf(position++ - topOffset);
                             } else {
                                 downR();
@@ -533,10 +549,10 @@ public abstract class FingerTree<T, S> {
 
                         @Override
                         public T previous() {
-                            if(position == topOffset) {
+                            if (position == topOffset) {
                                 up();
                                 return previous();
-                            } else if(stack.peek().getDepth() <= dd) {
+                            } else if (stack.peek().getDepth() <= dd) {
                                 return stack.peek().getLeaf(--position - topOffset);
                             } else {
                                 downL();
@@ -549,7 +565,7 @@ public abstract class FingerTree<T, S> {
                             Branch<T, S> top = (Branch<T, S>) stack.peek();
                             int chOffsetInParent = 0;
                             LL<? extends NonEmptyFingerTree<T, S>> children = top.children;
-                            while(children.head() != child) {
+                            while (children.head() != child) {
                                 chOffsetInParent += children.head().getLeafCount();
                                 children = children.tail();
                             }
@@ -562,7 +578,7 @@ public abstract class FingerTree<T, S> {
 
                         private void downR(LL<? extends NonEmptyFingerTree<T, S>> children) {
                             NonEmptyFingerTree<T, S> head = children.head();
-                            if(position - topOffset < head.getLeafCount()) {
+                            if (position - topOffset < head.getLeafCount()) {
                                 stack.push(head);
                             } else {
                                 topOffset += head.getLeafCount();
@@ -576,7 +592,7 @@ public abstract class FingerTree<T, S> {
 
                         private void downL(LL<? extends NonEmptyFingerTree<T, S>> children) {
                             NonEmptyFingerTree<T, S> head = children.head();
-                            if(position - topOffset <= head.getLeafCount()) {
+                            if (position - topOffset <= head.getLeafCount()) {
                                 stack.push(head);
                             } else {
                                 topOffset += head.getLeafCount();
@@ -602,7 +618,7 @@ public abstract class FingerTree<T, S> {
         private T getLeaf0(int index, LL<? extends FingerTree<T, S>> nodes) {
             FingerTree<T, S> head = nodes.head();
             int headSize = head.getLeafCount();
-            if(index < headSize) {
+            if (index < headSize) {
                 return head.getLeaf0(index);
             } else {
                 return getLeaf0(index - headSize, nodes.tail());
@@ -619,7 +635,7 @@ public abstract class FingerTree<T, S> {
                 int index, T data, LL<? extends NonEmptyFingerTree<T, S>> nodes) {
             NonEmptyFingerTree<T, S> head = nodes.head();
             int headSize = head.getLeafCount();
-            if(index < headSize) {
+            if (index < headSize) {
                 return cons(head.updateLeaf0(index, data), nodes.tail());
             } else {
                 return cons(head, updateLeaf0(index - headSize, data, nodes.tail()));
@@ -638,7 +654,7 @@ public abstract class FingerTree<T, S> {
                 LL<? extends NonEmptyFingerTree<T, S>> nodes) {
             NonEmptyFingerTree<T, S> head = nodes.head();
             int headLen = head.measure(metric);
-            if(position < headLen ||
+            if (position < headLen ||
                     (position == headLen && nodes.tail().isEmpty())) {
                 return head.locateProgressively0(metric, position);
             } else {
@@ -659,7 +675,7 @@ public abstract class FingerTree<T, S> {
                 LL<? extends NonEmptyFingerTree<T, S>> nodes) {
             NonEmptyFingerTree<T, S> head = nodes.head();
             int headLen = head.measure(metric);
-            if(position <= headLen) {
+            if (position <= headLen) {
                 return head.locateRegressively0(metric, position);
             } else {
                 return locateRegressively0(metric, position - headLen, nodes.tail())
@@ -695,10 +711,10 @@ public abstract class FingerTree<T, S> {
             int headTo = Math.min(endLeaf, headSize);
             int tailFrom = Math.max(startLeaf - headSize, 0);
             int tailTo = endLeaf - headSize;
-            if(startLeaf < headTo) {
+            if (startLeaf < headTo) {
                 acc = head.foldBetween0(acc, reduction, startLeaf, headTo);
             }
-            if(tailFrom < tailTo) {
+            if (tailFrom < tailTo) {
                 acc = foldBetween0(acc, reduction, tailFrom, tailTo, nodes.tail());
             }
             return acc;
@@ -729,10 +745,10 @@ public abstract class FingerTree<T, S> {
             int headTo = Math.min(endPosition, headLen);
             int tailFrom = Math.max(startPosition - headLen, 0);
             int tailTo = endPosition - headLen;
-            if(startPosition < headTo) {
+            if (startPosition < headTo) {
                 acc = head.foldBetween0(acc, reduction, metric, startPosition, headTo, rangeReduction);
             }
-            if(tailFrom < tailTo) {
+            if (tailFrom < tailTo) {
                 acc = foldBetween0(acc, reduction, metric, tailFrom, tailTo, rangeReduction, nodes.tail());
             }
             return acc;
@@ -751,7 +767,7 @@ public abstract class FingerTree<T, S> {
         @Override
         final S getSummaryBetween0(int startLeaf, int endLeaf) {
             assert Lists.isNonEmptyRange(startLeaf, endLeaf, getLeafCount());
-            if(startLeaf == 0 && endLeaf == getLeafCount()) {
+            if (startLeaf == 0 && endLeaf == getLeafCount()) {
                 return summary;
             } else {
                 return getSummaryBetween0(startLeaf, endLeaf, children);
@@ -767,17 +783,17 @@ public abstract class FingerTree<T, S> {
             int headTo = Math.min(endLeaf, headSize);
             int tailFrom = Math.max(startLeaf - headSize, 0);
             int tailTo = endLeaf - headSize;
-            if(startLeaf < headTo && tailFrom < tailTo) {
+            if (startLeaf < headTo && tailFrom < tailTo) {
                 return semigroup.reduce(
                         head.getSummaryBetween0(startLeaf, headTo),
                         getSummaryBetween0(tailFrom, tailTo, nodes.tail()));
-            } else if(startLeaf < headTo) {
+            } else if (startLeaf < headTo) {
                 return head.getSummaryBetween0(startLeaf, headTo);
-            } else if(tailFrom < tailTo) {
+            } else if (tailFrom < tailTo) {
                 return getSummaryBetween0(tailFrom, tailTo, nodes.tail());
             } else {
                 throw new AssertionError("Didn't expect empty range: "
-                        + "[" + startLeaf + ", " + endLeaf + ")");
+                                                 + "[" + startLeaf + ", " + endLeaf + ")");
             }
         }
 
@@ -789,7 +805,7 @@ public abstract class FingerTree<T, S> {
                 TriFunction<? super T, Integer, Integer, ? extends S> subSummary) {
             int len = measure(metric);
             assert Lists.isNonEmptyRange(startPosition, endPosition, len);
-            if(startPosition == 0 && endPosition == len) {
+            if (startPosition == 0 && endPosition == len) {
                 return getSummary();
             } else {
                 return getSummaryBetween0(metric, startPosition, endPosition, subSummary, children);
@@ -807,13 +823,13 @@ public abstract class FingerTree<T, S> {
             int headTo = Math.min(endPosition, headLen);
             int tailFrom = Math.max(startPosition - headLen, 0);
             int tailTo = endPosition - headLen;
-            if(startPosition < headTo && tailFrom < tailTo) {
+            if (startPosition < headTo && tailFrom < tailTo) {
                 return semigroup.reduce(
-                        head.getSummaryBetween0( metric, startPosition, headTo, subSummary),
+                        head.getSummaryBetween0(metric, startPosition, headTo, subSummary),
                         getSummaryBetween0(metric, tailFrom, tailTo, subSummary, nodes.tail()));
-            } else if(startPosition < headTo) {
+            } else if (startPosition < headTo) {
                 return head.getSummaryBetween0(metric, startPosition, headTo, subSummary);
-            } else if(tailFrom < tailTo) {
+            } else if (tailFrom < tailTo) {
                 return getSummaryBetween0(metric, tailFrom, tailTo, subSummary, nodes.tail());
             } else {
                 throw new AssertionError("Didn't expect empty range: [" + startPosition + ", " + endPosition + ")");
@@ -824,9 +840,9 @@ public abstract class FingerTree<T, S> {
         Either<Branch<T, S>, Tuple2<NonEmptyFingerTree<T, S>, NonEmptyFingerTree<T, S>>> appendLte(
                 FingerTree<T, S> suffix) {
             assert suffix.getDepth() <= this.getDepth();
-            if(suffix.getDepth() == this.getDepth()) {
+            if (suffix.getDepth() == this.getDepth()) {
                 return right(t(this, (NonEmptyFingerTree<T, S>) suffix));
-            } else if(children.size() == 2) {
+            } else if (children.size() == 2) {
                 return children.mapFirst2((left, right) -> {
                     return right.appendLte(suffix).unify(
                             r -> left(branch(left, r)),
@@ -836,8 +852,8 @@ public abstract class FingerTree<T, S> {
                 assert children.size() == 3;
                 return children.mapFirst3((left, middle, right) -> {
                     return right.appendLte(suffix)
-                            .mapLeft(r -> branch(left, middle, r))
-                            .mapRight(mr -> t(branch(left, middle), mr.map(FingerTree::branch)));
+                                .mapLeft(r -> branch(left, middle, r))
+                                .mapRight(mr -> t(branch(left, middle), mr.map(FingerTree::branch)));
                 });
             }
         }
@@ -846,9 +862,9 @@ public abstract class FingerTree<T, S> {
         Either<Branch<T, S>, Tuple2<NonEmptyFingerTree<T, S>, NonEmptyFingerTree<T, S>>> prependLte(
                 FingerTree<T, S> prefix) {
             assert prefix.getDepth() <= this.getDepth();
-            if(prefix.getDepth() == this.getDepth()) {
+            if (prefix.getDepth() == this.getDepth()) {
                 return right(t((NonEmptyFingerTree<T, S>) prefix, this));
-            } else if(children.size() == 2) {
+            } else if (children.size() == 2) {
                 return children.mapFirst2((left, right) -> {
                     return left.prependLte(prefix).unify(
                             l -> left(branch(l, right)),
@@ -858,8 +874,8 @@ public abstract class FingerTree<T, S> {
                 assert children.size() == 3;
                 return children.mapFirst3((left, middle, right) -> {
                     return left.prependLte(prefix)
-                            .mapLeft(l -> branch(l, middle, right))
-                            .mapRight(lm -> t(lm.map(FingerTree::branch), branch(middle, right)));
+                               .mapLeft(l -> branch(l, middle, right))
+                               .mapRight(lm -> t(lm.map(FingerTree::branch), branch(middle, right)));
                 });
             }
         }
@@ -867,7 +883,7 @@ public abstract class FingerTree<T, S> {
         @Override
         Tuple2<FingerTree<T, S>, FingerTree<T, S>> split0(int beforeLeaf) {
             assert Lists.isValidPosition(beforeLeaf, getLeafCount());
-            if(beforeLeaf == 0) {
+            if (beforeLeaf == 0) {
                 return t(empty(), this);
             } else {
                 return split0(beforeLeaf, children);
@@ -879,9 +895,9 @@ public abstract class FingerTree<T, S> {
             assert beforeLeaf > 0;
             FingerTree<T, S> head = nodes.head();
             int headSize = head.getLeafCount();
-            if(beforeLeaf <= headSize) {
+            if (beforeLeaf <= headSize) {
                 return head.split0(beforeLeaf)
-                        .map((l, r) -> t(l, concat(cons(r, nodes.tail()))));
+                           .map((l, r) -> t(l, concat(cons(r, nodes.tail()))));
             } else {
                 return split0(beforeLeaf - headSize, nodes.tail())
                         .map((l, r) -> t(head.join(l), r));
@@ -904,7 +920,7 @@ public abstract class FingerTree<T, S> {
             return navigate.apply(head.getSummary(), position).unify(
                     posInl -> head.locate0(navigate, posInl),
                     posInr -> locate0(navigate, posInr, nodes.tail())
-                                  .adjustMajor(head.getLeafCount()));
+                            .adjustMajor(head.getLeafCount()));
         }
     }
 
@@ -915,8 +931,11 @@ public abstract class FingerTree<T, S> {
 
     public static <T> FingerTree<T, Void> mkTree(List<? extends T> items) {
         return mkTree(items, new ToSemigroup<T, Void>() {
-            @Override public Void apply(T t) { return null; }
-            @Override public Void reduce(Void left, Void right) { return null; }
+            @Override
+            public Void apply(T t) { return null; }
+
+            @Override
+            public Void reduce(Void left, Void right) { return null; }
         });
     }
 
@@ -924,21 +943,21 @@ public abstract class FingerTree<T, S> {
             List<? extends T> items,
             ToSemigroup<? super T, S> summaryProvider) {
 
-        if(items.isEmpty()) {
+        if (items.isEmpty()) {
             return new Empty<>(summaryProvider);
         }
 
         ArrayList<NonEmptyFingerTree<T, S>> trees = new ArrayList<>(items.size());
-        for(T item: items) {
+        for (T item : items) {
             trees.add(new Leaf<T, S>(summaryProvider, item));
         }
 
-        while(trees.size() > 1) {
+        while (trees.size() > 1) {
             final int n = trees.size();
             int src = 0;
             int tgt = 0;
-            while(src < n) {
-                if(n - src >= 5 || n - src == 3) {
+            while (src < n) {
+                if (n - src >= 5 || n - src == 3) {
                     NonEmptyFingerTree<T, S> t1 = trees.get(src++);
                     NonEmptyFingerTree<T, S> t2 = trees.get(src++);
                     NonEmptyFingerTree<T, S> t3 = trees.get(src++);
@@ -987,8 +1006,11 @@ public abstract class FingerTree<T, S> {
     }
 
     public abstract int getDepth();
+
     public abstract int getLeafCount();
+
     public abstract Optional<S> getSummaryOpt();
+
     public abstract Either<FingerTree<T, S>, NonEmptyFingerTree<T, S>> caseEmpty();
 
     public final boolean isEmpty() {
@@ -1071,7 +1093,7 @@ public abstract class FingerTree<T, S> {
             int startLeaf,
             int endLeaf) {
         Lists.checkRange(startLeaf, endLeaf, getLeafCount());
-        if(startLeaf == endLeaf) {
+        if (startLeaf == endLeaf) {
             return acc;
         } else {
             return foldBetween0(acc, reduction, startLeaf, endLeaf);
@@ -1091,7 +1113,7 @@ public abstract class FingerTree<T, S> {
             int endPosition,
             TetraFunction<? super R, ? super T, Integer, Integer, ? extends R> rangeReduction) {
         Lists.checkRange(startPosition, endPosition, measure(metric));
-        if(startPosition == endPosition) {
+        if (startPosition == endPosition) {
             return acc;
         } else {
             return foldBetween0(
@@ -1110,8 +1132,8 @@ public abstract class FingerTree<T, S> {
     public Optional<S> getSummaryBetween(int startLeaf, int endLeaf) {
         Lists.checkRange(startLeaf, endLeaf, getLeafCount());
         return startLeaf == endLeaf
-            ? Optional.empty()
-            : Optional.of(getSummaryBetween0(startLeaf, endLeaf));
+               ? Optional.empty()
+               : Optional.of(getSummaryBetween0(startLeaf, endLeaf));
     }
 
     abstract S getSummaryBetween0(
@@ -1125,8 +1147,8 @@ public abstract class FingerTree<T, S> {
             TriFunction<? super T, Integer, Integer, ? extends S> subSummary) {
         Lists.checkRange(startPosition, endPosition, measure(metric));
         return startPosition == endPosition
-            ? Optional.empty()
-            : Optional.of(getSummaryBetween0(metric, startPosition, endPosition, subSummary));
+               ? Optional.empty()
+               : Optional.of(getSummaryBetween0(metric, startPosition, endPosition, subSummary));
     }
 
     abstract S getSummaryBetween0(
@@ -1144,9 +1166,9 @@ public abstract class FingerTree<T, S> {
 
     public FingerTree<T, S> removeLeafs(int fromLeaf, int toLeaf) {
         Lists.checkRange(fromLeaf, toLeaf, getLeafCount());
-        if(fromLeaf == toLeaf) {
+        if (fromLeaf == toLeaf) {
             return this;
-        } else if(fromLeaf == 0 && toLeaf == getLeafCount()) {
+        } else if (fromLeaf == 0 && toLeaf == getLeafCount()) {
             return empty();
         } else {
             FingerTree<T, S> left = split0(fromLeaf)._1;
@@ -1175,13 +1197,13 @@ public abstract class FingerTree<T, S> {
      * Returns a list view of this tree.
      * Complexity of operations on the returned list:
      * <ul>
-     *   <li>{@code size()}: O(1);</li>
-     *   <li>{@code get}: O(log(n));</li>
-     *   <li><b>iteration</b>: O(n) in either direction,
-     *     with O(log(n)) total allocations;</li>
-     *   <li>{@code subList}: O(log(n));</li>
-     *   <li><b>iterative {@code subList},</b> i.e. calling {@code subList}
-     *     on the result of previous {@code subList}, up to n times: O(n).</li>
+     * <li>{@code size()}: O(1);</li>
+     * <li>{@code get}: O(log(n));</li>
+     * <li><b>iteration</b>: O(n) in either direction,
+     * with O(log(n)) total allocations;</li>
+     * <li>{@code subList}: O(log(n));</li>
+     * <li><b>iterative {@code subList},</b> i.e. calling {@code subList}
+     * on the result of previous {@code subList}, up to n times: O(n).</li>
      * </ul>
      */
     public abstract List<T> asList();

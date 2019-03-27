@@ -12,27 +12,28 @@ import javafx.collections.ObservableList;
  * removed elements ({@link #getAddedSize()}).
  *
  * <p>Subtypes of this interface differ in how they refer to the added elements:
- *   <ul>
- *     <li>{@link ListModification} holds a reference to the observable list
- *     in which the modification occurred and the
- *     {@link ListModification#getAddedSubList()} method returns a sublist view
- *     of the original observable list. Such sublist is valid only until the
- *     next list modification.
- *     <li>{@link MaterializedListModification} has its own copy of added
- *     elements ({@link MaterializedListModification#getAdded()}), thus the
- *     validity of the list of added elements returned from {@code getAdded()}
- *     is not restricted.
- *     <li>{@link QuasiListModification} does not provide a way to get the
- *     added elements directly, but has to be combined with the observable list
- *     to obtain {@linkplain ListModification}
- *     ({@link QuasiListModification#instantiate(QuasiListModification, ObservableList)})
- *     or {@linkplain MaterializedListModification}
- *     ({@link QuasiListModification#materialize(QuasiListModification, ObservableList)}).
- *   </ul>
+ * <ul>
+ * <li>{@link ListModification} holds a reference to the observable list
+ * in which the modification occurred and the
+ * {@link ListModification#getAddedSubList()} method returns a sublist view
+ * of the original observable list. Such sublist is valid only until the
+ * next list modification.
+ * <li>{@link MaterializedListModification} has its own copy of added
+ * elements ({@link MaterializedListModification#getAdded()}), thus the
+ * validity of the list of added elements returned from {@code getAdded()}
+ * is not restricted.
+ * <li>{@link QuasiListModification} does not provide a way to get the
+ * added elements directly, but has to be combined with the observable list
+ * to obtain {@linkplain ListModification}
+ * ({@link QuasiListModification#instantiate(QuasiListModification, ObservableList)})
+ * or {@linkplain MaterializedListModification}
+ * ({@link QuasiListModification#materialize(QuasiListModification, ObservableList)}).
+ * </ul>
  *
  * @param <E> type of list elements.
  */
 interface ListModificationLike<E> {
+
     /**
      * Returns the position in the list where this change occurred.
      */

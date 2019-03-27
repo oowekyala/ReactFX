@@ -2,11 +2,12 @@ package org.reactfx.value;
 
 import java.util.function.Consumer;
 
-import javafx.beans.value.ObservableValue;
-
 import org.reactfx.Subscription;
 
+import javafx.beans.value.ObservableValue;
+
 class VarFromVal<T> extends ProxyVal<T, T> implements Var<T> {
+
     private final Consumer<T> setter;
 
     private Subscription binding = null;
@@ -37,7 +38,7 @@ class VarFromVal<T> extends ProxyVal<T, T> implements Var<T> {
 
     @Override
     public void unbind() {
-        if(binding != null) {
+        if (binding != null) {
             binding.unsubscribe();
             binding = null;
         }

@@ -1,8 +1,8 @@
 package org.reactfx;
 
-import javafx.concurrent.Task;
-
 import org.reactfx.util.Try;
+
+import javafx.concurrent.Task;
 
 public interface TaskStream<T> extends EventStream<Task<T>> {
 
@@ -25,6 +25,7 @@ public interface TaskStream<T> extends EventStream<Task<T>> {
      * <i>t2</i> emitted from this stream in this order, if <i>t2</i> arrives
      * before <i>t1</i> is completed, then <i>t1</i> is cancelled and its result
      * is discarded (i.e. not emitted from the returned stream).
+     *
      * @see #await()
      */
     default AwaitingEventStream<Try<T>> awaitLatest() {
@@ -36,10 +37,12 @@ public interface TaskStream<T> extends EventStream<Task<T>> {
      * When an event is emitted from {@code canceller}, if the task most
      * recently emitted from this stream has not yet completed, it is cancelled
      * and its result discarded (i.e. not emitted from the returned stream).
+     *
      * @param canceller An event from this stream causes the currently expected
-     * result (if any) to be discarded. It can be used to signal that a new
-     * task will arrive from this stream shortly, which makes the currently
-     * expected result outdated.
+     *                  result (if any) to be discarded. It can be used to signal that a new
+     *                  task will arrive from this stream shortly, which makes the currently
+     *                  expected result outdated.
+     *
      * @see #awaitLatest()
      */
     default AwaitingEventStream<Try<T>> awaitLatest(EventStream<?> canceller) {

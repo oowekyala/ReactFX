@@ -42,7 +42,7 @@ import javafx.stage.Window;
  * accept the invalidated value.
  */
 public interface Val<T>
-extends ObservableValue<T>, Observable<Consumer<? super T>> {
+        extends ObservableValue<T>, Observable<Consumer<? super T>> {
 
     /* *************** *
      * Default methods *
@@ -134,8 +134,9 @@ extends ObservableValue<T>, Observable<Consumer<? super T>> {
 
     /**
      * Checks whether this {@linkplain Val} holds a (non-null) value.
+     *
      * @return {@code true} if this {@linkplain Val} holds a (non-null) value,
-     * {@code false} otherwise.
+     *     {@code false} otherwise.
      */
     default boolean isPresent() {
         return getValue() != null;
@@ -151,23 +152,25 @@ extends ObservableValue<T>, Observable<Consumer<? super T>> {
     /**
      * Invokes the given function if this {@linkplain Val} holds a (non-null)
      * value.
+     *
      * @param f function to invoke on the value currently held by this
-     * {@linkplain Val}.
+     *          {@linkplain Val}.
      */
     default void ifPresent(Consumer<? super T> f) {
         T val = getValue();
-        if(val != null) {
+        if (val != null) {
             f.accept(val);
         }
     }
 
     /**
      * Returns the value currently held by this {@linkplain Val}.
+     *
      * @throws NoSuchElementException if there is no value present.
      */
     default T getOrThrow() {
         T res = getValue();
-        if(res != null) {
+        if (res != null) {
             return res;
         } else {
             throw new NoSuchElementException();
@@ -177,12 +180,13 @@ extends ObservableValue<T>, Observable<Consumer<? super T>> {
     /**
      * Returns the value currently held by this {@linkplain Val}. If this
      * {@linkplain Val} is empty, {@code defaultValue} is returned instead.
+     *
      * @param defaultValue value to return if there is no value present in
-     * this {@linkplain Val}.
+     *                     this {@linkplain Val}.
      */
     default T getOrElse(T defaultValue) {
         T res = getValue();
-        if(res != null) {
+        if (res != null) {
             return res;
         } else {
             return defaultValue;
@@ -192,12 +196,13 @@ extends ObservableValue<T>, Observable<Consumer<? super T>> {
     /**
      * Like {@link #getOrElse(Object)}, except the default value is computed
      * by {@code defaultSupplier} only when necessary.
+     *
      * @param defaultSupplier computation to produce default value, if this
-     * {@linkplain Val} is empty.
+     *                        {@linkplain Val} is empty.
      */
     default T getOrSupply(Supplier<? extends T> defaultSupplier) {
         T res = getValue();
-        if(res != null) {
+        if (res != null) {
             return res;
         } else {
             return defaultSupplier.get();
@@ -243,6 +248,7 @@ extends ObservableValue<T>, Observable<Consumer<? super T>> {
     /**
      * Returns a new {@linkplain Val} that holds a mapping of the value held by
      * this {@linkplain Val}, and is empty when this {@linkplain Val} is empty.
+     *
      * @param f function to map the value held by this {@linkplain Val}.
      */
     default <U> Val<U> map(Function<? super T, ? extends U> f) {
@@ -336,10 +342,10 @@ extends ObservableValue<T>, Observable<Consumer<? super T>> {
      * value (i.e. the current value of this {@linkplain Val}), instead of any
      * intermediate interpolated value.
      *
-     * @param duration function that calculates the desired duration of the
-     * transition for two boundary values.
+     * @param duration     function that calculates the desired duration of the
+     *                     transition for two boundary values.
      * @param interpolator calculates the interpolated value between two
-     * boundary values, given a fraction.
+     *                     boundary values, given a fraction.
      */
     default Val<T> animate(
             BiFunction<? super T, ? super T, Duration> duration,
@@ -358,9 +364,9 @@ extends ObservableValue<T>, Observable<Consumer<? super T>> {
      * value (i.e. the current value of this {@linkplain Val}), instead of any
      * intermediate interpolated value.
      *
-     * @param duration the desired duration of the transition
+     * @param duration     the desired duration of the transition
      * @param interpolator calculates the interpolated value between two
-     * boundary values, given a fraction.
+     *                     boundary values, given a fraction.
      */
     default Val<T> animate(
             Duration duration,
@@ -372,6 +378,7 @@ extends ObservableValue<T>, Observable<Consumer<? super T>> {
      * Let's this {@linkplain Val} be viewed as a {@linkplain Var}, with the
      * given {@code setValue} function serving the purpose of
      * {@link Var#setValue(Object)}.
+     *
      * @see Var#fromVal(ObservableValue, Consumer)
      */
     default Var<T> asVar(Consumer<T> setValue) {
@@ -420,14 +427,15 @@ extends ObservableValue<T>, Observable<Consumer<? super T>> {
      */
     static <T> Val<T> wrap(ObservableValue<T> obs) {
         return obs instanceof Val
-                ? (Val<T>) obs
-                : new ValWrapper<>(obs);
+               ? (Val<T>) obs
+               : new ValWrapper<>(obs);
     }
 
 
     /**
      * Creates a val that holds the latest value of the given stream. The
      * initial value is used until the stream emits its first event.
+     *
      * @since RFXX
      */
     static <T> Val<T> fromStream(EventStream<T> stream, T initialValue) {
@@ -437,7 +445,7 @@ extends ObservableValue<T>, Observable<Consumer<? super T>> {
     static <T> Subscription observeChanges(
             ObservableValue<? extends T> obs,
             ChangeListener<? super T> listener) {
-        if(obs instanceof Val) {
+        if (obs instanceof Val) {
             return ((Val<? extends T>) obs).observeChanges(listener);
         } else {
             obs.addListener(listener);
@@ -512,12 +520,12 @@ extends ObservableValue<T>, Observable<Consumer<? super T>> {
     }
 
     static <T> SuspendableVal<T> suspendable(ObservableValue<T> obs) {
-        if(obs instanceof SuspendableVal) {
+        if (obs instanceof SuspendableVal) {
             return (SuspendableVal<T>) obs;
         } else {
             Val<T> val = obs instanceof Val
-                    ? (Val<T>) obs
-                    : new ValWrapper<>(obs);
+                         ? (Val<T>) obs
+                         : new ValWrapper<>(obs);
             return new SuspendableValWrapper<>(val);
         }
     }
@@ -534,11 +542,11 @@ extends ObservableValue<T>, Observable<Consumer<? super T>> {
      * value (i.e. the current value of {@code obs}), instead of any intermediate
      * interpolated value.
      *
-     * @param obs observable value to animate
-     * @param duration function that calculates the desired duration of the
-     * transition for two boundary values.
+     * @param obs          observable value to animate
+     * @param duration     function that calculates the desired duration of the
+     *                     transition for two boundary values.
      * @param interpolator calculates the interpolated value between two
-     * boundary values, given a fraction.
+     *                     boundary values, given a fraction.
      */
     static <T> Val<T> animate(
             ObservableValue<T> obs,
@@ -559,10 +567,10 @@ extends ObservableValue<T>, Observable<Consumer<? super T>> {
      * value (i.e. the current value of {@code obs}), instead of any intermediate
      * interpolated value.
      *
-     * @param obs observable value to animate
-     * @param duration the desired duration of the transition
+     * @param obs          observable value to animate
+     * @param duration     the desired duration of the transition
      * @param interpolator calculates the interpolated value between two
-     * boundary values, given a fraction.
+     *                     boundary values, given a fraction.
      */
     static <T> Val<T> animate(
             ObservableValue<T> obs,
@@ -600,7 +608,7 @@ extends ObservableValue<T>, Observable<Consumer<? super T>> {
             BiFunction<? super A, ? super B, ? extends R> f) {
         return create(
                 () -> {
-                    if(src1.getValue() != null && src2.getValue() != null) {
+                    if (src1.getValue() != null && src2.getValue() != null) {
                         return f.apply(src1.getValue(), src2.getValue());
                     } else {
                         return null;
@@ -613,14 +621,14 @@ extends ObservableValue<T>, Observable<Consumer<? super T>> {
             ObservableValue<A> src1,
             ObservableValue<B> src2,
             ObservableValue<C> src3,
-            TriFunction<? super A, ? super B, ? super C,  ? extends R> f) {
+            TriFunction<? super A, ? super B, ? super C, ? extends R> f) {
         return create(
                 () -> {
-                    if(src1.getValue() != null &&
+                    if (src1.getValue() != null &&
                             src2.getValue() != null &&
                             src3.getValue() != null) {
                         return f.apply(
-                            src1.getValue(), src2.getValue(), src3.getValue());
+                                src1.getValue(), src2.getValue(), src3.getValue());
                     } else {
                         return null;
                     }
@@ -633,16 +641,16 @@ extends ObservableValue<T>, Observable<Consumer<? super T>> {
             ObservableValue<B> src2,
             ObservableValue<C> src3,
             ObservableValue<D> src4,
-            TetraFunction<? super A, ? super B, ? super C, ? super D,  ? extends R> f) {
+            TetraFunction<? super A, ? super B, ? super C, ? super D, ? extends R> f) {
         return create(
                 () -> {
-                    if(src1.getValue() != null &&
+                    if (src1.getValue() != null &&
                             src2.getValue() != null &&
                             src3.getValue() != null &&
                             src4.getValue() != null) {
                         return f.apply(
-                            src1.getValue(), src2.getValue(),
-                            src3.getValue(), src4.getValue());
+                                src1.getValue(), src2.getValue(),
+                                src3.getValue(), src4.getValue());
                     } else {
                         return null;
                     }
@@ -656,17 +664,17 @@ extends ObservableValue<T>, Observable<Consumer<? super T>> {
             ObservableValue<C> src3,
             ObservableValue<D> src4,
             ObservableValue<E> src5,
-            PentaFunction<? super A, ? super B, ? super C, ? super D, ? super E,  ? extends R> f) {
+            PentaFunction<? super A, ? super B, ? super C, ? super D, ? super E, ? extends R> f) {
         return create(
                 () -> {
-                    if(src1.getValue() != null &&
+                    if (src1.getValue() != null &&
                             src2.getValue() != null &&
                             src3.getValue() != null &&
                             src4.getValue() != null &&
                             src5.getValue() != null) {
                         return f.apply(
-                            src1.getValue(), src2.getValue(), src3.getValue(),
-                            src4.getValue(), src5.getValue());
+                                src1.getValue(), src2.getValue(), src3.getValue(),
+                                src4.getValue(), src5.getValue());
                     } else {
                         return null;
                     }
@@ -681,18 +689,18 @@ extends ObservableValue<T>, Observable<Consumer<? super T>> {
             ObservableValue<D> src4,
             ObservableValue<E> src5,
             ObservableValue<F> src6,
-            HexaFunction<? super A, ? super B, ? super C, ? super D, ? super E, ? super F,  ? extends R> f) {
+            HexaFunction<? super A, ? super B, ? super C, ? super D, ? super E, ? super F, ? extends R> f) {
         return create(
                 () -> {
-                    if(src1.getValue() != null &&
+                    if (src1.getValue() != null &&
                             src2.getValue() != null &&
                             src3.getValue() != null &&
                             src4.getValue() != null &&
                             src5.getValue() != null &&
                             src6.getValue() != null) {
                         return f.apply(
-                            src1.getValue(), src2.getValue(), src3.getValue(),
-                            src4.getValue(), src5.getValue(), src6.getValue());
+                                src1.getValue(), src2.getValue(), src3.getValue(),
+                                src4.getValue(), src5.getValue(), src6.getValue());
                     } else {
                         return null;
                     }
@@ -708,12 +716,12 @@ extends ObservableValue<T>, Observable<Consumer<? super T>> {
             @Override
             protected Subscription connect() {
                 InvalidationListener listener = obs -> invalidate();
-                for(javafx.beans.Observable dep: dependencies) {
+                for (javafx.beans.Observable dep : dependencies) {
                     dep.addListener(listener);
                 }
 
                 return () -> {
-                    for(javafx.beans.Observable dep: dependencies) {
+                    for (javafx.beans.Observable dep : dependencies) {
                         dep.removeListener(listener);
                     }
                 };
@@ -768,8 +776,9 @@ extends ObservableValue<T>, Observable<Consumer<? super T>> {
 
 
 class InvalidationListenerWrapper<T>
-extends WrapperBase<InvalidationListener>
-implements Consumer<T> {
+        extends WrapperBase<InvalidationListener>
+        implements Consumer<T> {
+
     private final ObservableValue<T> obs;
 
     public InvalidationListenerWrapper(
@@ -787,8 +796,9 @@ implements Consumer<T> {
 
 
 class ChangeListenerWrapper<T>
-extends WrapperBase<ChangeListener<? super T>>
-implements Consumer<T> {
+        extends WrapperBase<ChangeListener<? super T>>
+        implements Consumer<T> {
+
     private final ObservableValue<T> obs;
 
     public ChangeListenerWrapper(
@@ -801,7 +811,7 @@ implements Consumer<T> {
     @Override
     public void accept(T oldValue) {
         T newValue = obs.getValue();
-        if(!Objects.equals(oldValue, newValue)) {
+        if (!Objects.equals(oldValue, newValue)) {
             getWrappedValue().changed(obs, oldValue, newValue);
         }
     }

@@ -3,6 +3,7 @@ package org.reactfx;
 import java.util.function.Predicate;
 
 class FilterStream<T> extends EventStreamBase<T> {
+
     private final EventStream<T> source;
     private final Predicate<? super T> predicate;
 
@@ -16,7 +17,7 @@ class FilterStream<T> extends EventStreamBase<T> {
     @Override
     protected Subscription observeInputs() {
         return source.subscribe(t -> {
-            if(predicate.test(t)) {
+            if (predicate.test(t)) {
                 emit(t);
             }
         });

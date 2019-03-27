@@ -21,7 +21,7 @@ public interface MaterializedListModification<E> extends ListModificationLike<E>
 
     default MaterializedListModification<E> trim() {
         return Lists.commonPrefixSuffixLengths(getRemoved(), getAdded()).map((pref, suff) -> {
-            if(pref == 0 && suff == 0) {
+            if (pref == 0 && suff == 0) {
                 return this;
             } else {
                 return create(
@@ -34,7 +34,8 @@ public interface MaterializedListModification<E> extends ListModificationLike<E>
 }
 
 final class MaterializedListModificationImpl<E>
-implements MaterializedListModification<E> {
+        implements MaterializedListModification<E> {
+
     private final int from;
     private final List<? extends E> removed;
     private final List<? extends E> added;
@@ -46,7 +47,12 @@ implements MaterializedListModification<E> {
         this.added = added;
     }
 
-    @Override public int getFrom() { return from; }
-    @Override public List<? extends E> getRemoved() { return removed; }
-    @Override public List<? extends E> getAdded() { return added; }
+    @Override
+    public int getFrom() { return from; }
+
+    @Override
+    public List<? extends E> getRemoved() { return removed; }
+
+    @Override
+    public List<? extends E> getAdded() { return added; }
 }

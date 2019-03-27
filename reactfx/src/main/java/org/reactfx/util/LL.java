@@ -19,17 +19,29 @@ import java.util.stream.StreamSupport;
 public abstract class LL<T> implements Iterable<T> {
 
     private static class Nil<T> extends LL<T> {
+
         private static final Nil<?> INSTANCE = new Nil<Void>();
 
         @SuppressWarnings("unchecked")
         static <T> Nil<T> instance() { return (Nil<T>) INSTANCE; }
 
-        @Override public boolean isEmpty() { return true; }
-        @Override public int size() { return 0; }
-        @Override public T head() { throw new NoSuchElementException(); }
-        @Override public LL<T> tail() { throw new NoSuchElementException(); }
-        @Override public <U> LL<U> map(Function<? super T, ? extends U> f) { return instance(); }
-        @Override public Iterator<T> iterator() { return Collections.emptyIterator(); }
+        @Override
+        public boolean isEmpty() { return true; }
+
+        @Override
+        public int size() { return 0; }
+
+        @Override
+        public T head() { throw new NoSuchElementException(); }
+
+        @Override
+        public LL<T> tail() { throw new NoSuchElementException(); }
+
+        @Override
+        public <U> LL<U> map(Function<? super T, ? extends U> f) { return instance(); }
+
+        @Override
+        public Iterator<T> iterator() { return Collections.emptyIterator(); }
 
         @Override
         public <R> R fold(
@@ -47,6 +59,7 @@ public abstract class LL<T> implements Iterable<T> {
     }
 
     public static final class Cons<T> extends LL<T> {
+
         private final T head;
         private final LL<? extends T> tail;
         private final int size;
@@ -133,19 +146,19 @@ public abstract class LL<T> implements Iterable<T> {
 
     @SafeVarargs
     public static <T> Cons<T> of(T head, T... tail) {
-        return cons(head, of(tail, tail.length, LL.<T>nil()));
+        return cons(head, of(tail, tail.length, LL.nil()));
     }
 
     private static <T> LL<T> of(T[] elems, int to, LL<T> tail) {
-        if(to == 0) {
+        if (to == 0) {
             return tail;
         } else {
-            return of(elems, to - 1, cons(elems[to-1], tail));
+            return of(elems, to - 1, cons(elems[to - 1], tail));
         }
     }
 
     public static <T> LL<? extends T> concat(LL<? extends T> l1, LL<? extends T> l2) {
-        if(l1.isEmpty()) {
+        if (l1.isEmpty()) {
             return l2;
         } else {
             return cons(l1.head(), concat(l1.tail(), l2));
@@ -156,11 +169,17 @@ public abstract class LL<T> implements Iterable<T> {
     private LL() {}
 
     public abstract boolean isEmpty();
+
     public abstract int size();
+
     public abstract T head();
+
     public abstract LL<? extends T> tail();
+
     public abstract <U> LL<U> map(Function<? super T, ? extends U> f);
+
     public abstract <R> R fold(R acc, BiFunction<? super R, ? super T, ? extends R> reduction);
+
     public abstract <R> Optional<R> mapReduce(
             Function<? super T, ? extends R> map,
             BinaryOperator<R> reduce);
@@ -191,14 +210,14 @@ public abstract class LL<T> implements Iterable<T> {
 
     @Override
     public String toString() {
-        if(isEmpty()) {
+        if (isEmpty()) {
             return "[]";
         } else {
             StringBuilder sb = new StringBuilder();
             sb.append("[");
             sb.append(head());
             LL<? extends T> tail = tail();
-            while(!tail.isEmpty()) {
+            while (!tail.isEmpty()) {
                 sb.append(",").append(tail.head());
                 tail = tail.tail();
             }
@@ -213,7 +232,7 @@ public abstract class LL<T> implements Iterable<T> {
 
             @Override
             public boolean tryAdvance(Consumer<? super T> action) {
-                if(iterator.hasNext()) {
+                if (iterator.hasNext()) {
                     action.accept(iterator.next());
                     return true;
                 } else {

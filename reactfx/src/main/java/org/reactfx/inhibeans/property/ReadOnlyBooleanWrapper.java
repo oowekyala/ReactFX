@@ -7,8 +7,8 @@ import org.reactfx.Guard;
  */
 @Deprecated
 public class ReadOnlyBooleanWrapper
-extends javafx.beans.property.ReadOnlyBooleanWrapper
-implements Property<Boolean> {
+        extends javafx.beans.property.ReadOnlyBooleanWrapper
+        implements Property<Boolean> {
 
     private int blocked = 0;
     private boolean fireOnRelease = false;
@@ -21,7 +21,7 @@ implements Property<Boolean> {
 
     private void release() {
         assert blocked > 0;
-        if(--blocked == 0 && fireOnRelease) {
+        if (--blocked == 0 && fireOnRelease) {
             fireOnRelease = false;
             super.fireValueChangedEvent();
         }
@@ -29,7 +29,7 @@ implements Property<Boolean> {
 
     @Override
     protected void fireValueChangedEvent() {
-        if(blocked > 0) {
+        if (blocked > 0) {
             fireOnRelease = true;
         } else {
             super.fireValueChangedEvent();
@@ -54,7 +54,8 @@ implements Property<Boolean> {
     }
 
     public ReadOnlyBooleanWrapper(Object bean, String name,
-            boolean initialValue) {
+                                  boolean initialValue) {
         super(bean, name, initialValue);
-    };
+    }
+
 }

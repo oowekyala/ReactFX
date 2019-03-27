@@ -3,15 +3,16 @@ package org.reactfx.collection;
 import java.util.List;
 import java.util.function.Function;
 
-import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
-
 import org.reactfx.Subscription;
 import org.reactfx.util.Lists;
 import org.reactfx.value.Val;
 
+import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
+
 class MappedList<E, F> extends LiveListBase<F>
-implements UnmodifiableByDefaultLiveList<F> {
+        implements UnmodifiableByDefaultLiveList<F> {
+
     private final ObservableList<? extends E> source;
     private final Function<? super E, ? extends F> mapper;
 
@@ -73,7 +74,8 @@ implements UnmodifiableByDefaultLiveList<F> {
 }
 
 class DynamicallyMappedList<E, F> extends LiveListBase<F>
-implements UnmodifiableByDefaultLiveList<F> {
+        implements UnmodifiableByDefaultLiveList<F> {
+
     private final ObservableList<? extends E> source;
     private final Val<? extends Function<? super E, ? extends F>> mapper;
 

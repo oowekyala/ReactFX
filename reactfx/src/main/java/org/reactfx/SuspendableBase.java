@@ -5,8 +5,9 @@ import org.reactfx.util.AccumulatorSize;
 import org.reactfx.util.NotificationAccumulator;
 
 public abstract class SuspendableBase<O, T, A>
-extends ObservableBase<O, T>
-implements Suspendable {
+        extends ObservableBase<O, T>
+        implements Suspendable {
+
     private final EventStream<T> input;
     private final AccumulationFacility<T, A> af;
 
@@ -23,7 +24,9 @@ implements Suspendable {
     }
 
     protected abstract AccumulatorSize sizeOf(A accum);
+
     protected abstract T headOf(A accum);
+
     protected abstract A tailOf(A accum);
 
     protected A initialAccumulator(T value) {
@@ -52,12 +55,12 @@ implements Suspendable {
 
     private void resume() {
         --suspended;
-        if(suspended == 0 && hasValue) {
-            while(sizeOf(accumulatedValue) == AccumulatorSize.MANY) {
+        if (suspended == 0 && hasValue) {
+            while (sizeOf(accumulatedValue) == AccumulatorSize.MANY) {
                 enqueueNotifications(headOf(accumulatedValue));
                 accumulatedValue = tailOf(accumulatedValue);
             }
-            if(sizeOf(accumulatedValue) == AccumulatorSize.ONE) {
+            if (sizeOf(accumulatedValue) == AccumulatorSize.ONE) {
                 enqueueNotifications(headOf(accumulatedValue));
             }
             reset();
@@ -71,8 +74,8 @@ implements Suspendable {
     }
 
     private void handleEvent(T event) {
-        if(isSuspended()) {
-            if(hasValue) {
+        if (isSuspended()) {
+            if (hasValue) {
                 accumulatedValue = reduce(accumulatedValue, event);
             } else {
                 accumulatedValue = initialAccumulator(event);

@@ -11,18 +11,30 @@ import javafx.scene.control.IndexRange;
 
 public final class SparseList<E> {
 
-    private static interface Segment<E> {
+    private interface Segment<E> {
+
         boolean isPresent();
+
         int getLength();
+
         int getPresentCount();
+
         int getPresentCountBetween(int from, int to);
+
         boolean isPresent(int index);
+
         Optional<E> get(int index);
+
         E getOrThrow(int index);
+
         void setOrThrow(int index, E elem);
+
         List<E> appendTo(List<E> acc);
+
         List<E> appendRangeTo(List<E> acc, int from, int to);
+
         Segment<E> subSegment(int from, int to);
+
         boolean possiblyDestructiveAppend(Segment<E> suffix);
 
         default Stats getStatsBetween(int from, int to) {
@@ -31,6 +43,7 @@ public final class SparseList<E> {
     }
 
     private static final class AbsentSegment<E> implements Segment<E> {
+
         private int length;
 
         AbsentSegment(int length) {
@@ -101,7 +114,7 @@ public final class SparseList<E> {
 
         @Override
         public boolean possiblyDestructiveAppend(Segment<E> suffix) {
-            if(suffix.getPresentCount() == 0) {
+            if (suffix.getPresentCount() == 0) {
                 length += suffix.getLength();
                 return true;
             } else {
@@ -111,6 +124,7 @@ public final class SparseList<E> {
     }
 
     private static final class PresentSegment<E> implements Segment<E> {
+
         private final List<E> list;
 
         public PresentSegment(Collection<? extends E> c) {
@@ -184,7 +198,7 @@ public final class SparseList<E> {
 
         @Override
         public boolean possiblyDestructiveAppend(Segment<E> suffix) {
-            if(suffix.getPresentCount() == suffix.getLength()) {
+            if (suffix.getPresentCount() == suffix.getLength()) {
                 suffix.appendTo(list);
                 return true;
             } else {
@@ -194,6 +208,7 @@ public final class SparseList<E> {
     }
 
     private static final class Stats {
+
         private static final Stats ZERO = new Stats(0, 0);
 
         final int size;
@@ -206,24 +221,25 @@ public final class SparseList<E> {
         }
 
         int getSize() { return size; }
+
         int getPresentCount() { return presentCount; }
     }
 
     private static final ToSemigroup<Segment<?>, Stats> SEGMENT_STATS =
             new ToSemigroup<Segment<?>, Stats>() {
 
-        @Override
-        public Stats reduce(Stats left, Stats right) {
-            return new Stats(
-                    left.size + right.size,
-                    left.presentCount + right.presentCount);
-        }
+                @Override
+                public Stats reduce(Stats left, Stats right) {
+                    return new Stats(
+                            left.size + right.size,
+                            left.presentCount + right.presentCount);
+                }
 
-        @Override
-        public Stats apply(Segment<?> seg) {
-            return new Stats(seg.getLength(), seg.getPresentCount());
-        }
-    };
+                @Override
+                public Stats apply(Segment<?> seg) {
+                    return new Stats(seg.getLength(), seg.getPresentCount());
+                }
+            };
 
     private static <E> FingerTree<Segment<E>, Stats> emptyTree() {
         return FingerTree.empty(SEGMENT_STATS);
@@ -282,17 +298,17 @@ public final class SparseList<E> {
     public int indexOfPresentItem(int presentIndex) {
         Lists.checkIndex(presentIndex, getPresentCount());
         return tree.locateProgressively(Stats::getPresentCount, presentIndex)
-                .map(this::locationToPosition);
+                   .map(this::locationToPosition);
     }
 
     public IndexRange getPresentItemsRange() {
-        if(getPresentCount() == 0) {
+        if (getPresentCount() == 0) {
             return new IndexRange(0, 0);
         } else {
             int lowerBound = tree.locateProgressively(Stats::getPresentCount, 0)
-                    .map(this::locationToPosition);
+                                 .map(this::locationToPosition);
             int upperBound = tree.locateRegressively(Stats::getPresentCount, getPresentCount())
-                    .map(this::locationToPosition);
+                                 .map(this::locationToPosition);
             return new IndexRange(lowerBound, upperBound);
         }
     }
@@ -327,14 +343,14 @@ public final class SparseList<E> {
 
     public void remove(int from, int to) {
         Lists.checkRange(from, to, size());
-        if(from != to) {
+        if (from != to) {
             spliceSegments(from, to, Collections.emptyList());
         }
     }
 
     public void set(int index, E elem) {
         tree.get(Stats::getSize, index).exec((seg, loc) -> {
-            if(seg.isPresent()) {
+            if (seg.isPresent()) {
                 seg.setOrThrow(loc.minor, elem);
                 // changing an element does not affect stats, so we're done
             } else {
@@ -344,7 +360,7 @@ public final class SparseList<E> {
     }
 
     public boolean setIfAbsent(int index, E elem) {
-        if(isPresent(index)) {
+        if (isPresent(index)) {
             return false;
         } else {
             set(index, elem);
@@ -357,7 +373,7 @@ public final class SparseList<E> {
     }
 
     public void insertAll(int position, Collection<? extends E> elems) {
-        if(elems.isEmpty()) {
+        if (elems.isEmpty()) {
             return;
         }
 
@@ -370,10 +386,10 @@ public final class SparseList<E> {
     }
 
     public void insertVoid(int position, int length) {
-        if(length < 0) {
+        if (length < 0) {
             throw new IllegalArgumentException(
                     "length cannot be negative: " + length);
-        } else if(length == 0) {
+        } else if (length == 0) {
             return;
         }
 
@@ -386,9 +402,9 @@ public final class SparseList<E> {
     }
 
     public void splice(int from, int to, Collection<? extends E> elems) {
-        if(elems.isEmpty()) {
+        if (elems.isEmpty()) {
             remove(from, to);
-        } else if(from == to) {
+        } else if (from == to) {
             insertAll(from, elems);
         } else {
             spliceSegments(
@@ -398,12 +414,12 @@ public final class SparseList<E> {
     }
 
     public void spliceByVoid(int from, int to, int length) {
-        if(length == 0) {
+        if (length == 0) {
             remove(from, to);
-        } else if(length < 0) {
+        } else if (length < 0) {
             throw new IllegalArgumentException(
                     "length cannot be negative: " + length);
-        } else if(from == to) {
+        } else if (from == to) {
             insertVoid(from, length);
         } else {
             spliceSegments(
@@ -415,12 +431,12 @@ public final class SparseList<E> {
     private void spliceSegments(int from, int to, List<Segment<E>> middle) {
         Lists.checkRange(from, to, tree.getSummary(Stats.ZERO).getSize());
         tree = tree.caseEmpty()
-                .mapLeft(emptyTree -> join(emptyTree, middle, emptyTree))
-                .toLeft(nonEmptyTree -> nonEmptyTree.split(Stats::getSize, from).map((left, lSuffix, r) -> {
-                    return nonEmptyTree.split(Stats::getSize, to).map((l, rPrefix, right) -> {
-                        return join(left, lSuffix, middle, rPrefix, right);
-                    });
-                }));
+                   .mapLeft(emptyTree -> join(emptyTree, middle, emptyTree))
+                   .toLeft(nonEmptyTree -> nonEmptyTree.split(Stats::getSize, from).map((left, lSuffix, r) -> {
+                       return nonEmptyTree.split(Stats::getSize, to).map((l, rPrefix, right) -> {
+                           return join(left, lSuffix, middle, rPrefix, right);
+                       });
+                   }));
     }
 
     private FingerTree<Segment<E>, Stats> join(
@@ -444,13 +460,13 @@ public final class SparseList<E> {
 
         Segment<E> lSeg = lSuffix._1;
         int lMax = lSuffix._2;
-        if(lMax > 0) {
+        if (lMax > 0) {
             left = left.append(lSeg.subSegment(0, lMax));
         }
 
         Segment<E> rSeg = rPrefix._1;
         int rMin = rPrefix._2;
-        if(rMin < rSeg.getLength()) {
+        if (rMin < rSeg.getLength()) {
             right = right.prepend(rSeg.subSegment(rMin, rSeg.getLength()));
         }
 
@@ -462,7 +478,7 @@ public final class SparseList<E> {
             List<Segment<E>> middle,
             FingerTree<Segment<E>, Stats> right) {
 
-        for(Segment<E> seg: middle) {
+        for (Segment<E> seg : middle) {
             left = append(left, seg);
         }
         return join(left, right);
@@ -471,14 +487,14 @@ public final class SparseList<E> {
     private FingerTree<Segment<E>, Stats> join(
             FingerTree<Segment<E>, Stats> left,
             FingerTree<Segment<E>, Stats> right) {
-        if(left.isEmpty()) {
+        if (left.isEmpty()) {
             return right;
-        } else if(right.isEmpty()) {
+        } else if (right.isEmpty()) {
             return left;
         } else {
             Segment<E> lastLeft = left.getLeaf(left.getLeafCount() - 1);
             Segment<E> firstRight = right.getLeaf(0);
-            if(lastLeft.possiblyDestructiveAppend(firstRight)) {
+            if (lastLeft.possiblyDestructiveAppend(firstRight)) {
                 left = left.updateLeaf(left.getLeafCount() - 1, lastLeft);
                 right = right.split(1)._2;
             }
@@ -489,11 +505,11 @@ public final class SparseList<E> {
     private FingerTree<Segment<E>, Stats> append(
             FingerTree<Segment<E>, Stats> left,
             Segment<E> right) {
-        if(left.isEmpty()) {
+        if (left.isEmpty()) {
             return left.append(right);
         } else {
             Segment<E> lastLeft = left.getLeaf(left.getLeafCount() - 1);
-            if(lastLeft.possiblyDestructiveAppend(right)) {
+            if (lastLeft.possiblyDestructiveAppend(right)) {
                 return left.updateLeaf(left.getLeafCount() - 1, lastLeft);
             } else {
                 return left.append(right);
@@ -510,6 +526,7 @@ public final class SparseList<E> {
 
     /**
      * For testing only.
+     *
      * @return
      */
     FingerTree<Segment<E>, Stats> getTree() {

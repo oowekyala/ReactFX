@@ -8,4 +8,4 @@ import org.reactfx.value.SuspendableVar;
  */
 @Deprecated
 public interface Property<T>
-extends javafx.beans.property.Property<T>, ObservableValue<T> {}
+        extends javafx.beans.property.Property<T>, ObservableValue<T> {}

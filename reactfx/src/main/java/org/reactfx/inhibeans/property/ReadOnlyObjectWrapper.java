@@ -7,8 +7,8 @@ import org.reactfx.Guard;
  */
 @Deprecated
 public class ReadOnlyObjectWrapper<T>
-extends javafx.beans.property.ReadOnlyObjectWrapper<T>
-implements Property<T> {
+        extends javafx.beans.property.ReadOnlyObjectWrapper<T>
+        implements Property<T> {
 
     private int blocked = 0;
     private boolean fireOnRelease = false;
@@ -21,7 +21,7 @@ implements Property<T> {
 
     private void release() {
         assert blocked > 0;
-        if(--blocked == 0 && fireOnRelease) {
+        if (--blocked == 0 && fireOnRelease) {
             fireOnRelease = false;
             super.fireValueChangedEvent();
         }
@@ -29,7 +29,7 @@ implements Property<T> {
 
     @Override
     protected void fireValueChangedEvent() {
-        if(blocked > 0) {
+        if (blocked > 0) {
             fireOnRelease = true;
         } else {
             super.fireValueChangedEvent();
@@ -55,5 +55,6 @@ implements Property<T> {
 
     public ReadOnlyObjectWrapper(Object bean, String name, T initialValue) {
         super(bean, name, initialValue);
-    };
+    }
+
 }

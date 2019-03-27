@@ -4,7 +4,7 @@ package org.reactfx;
 @FunctionalInterface
 public interface Guard extends AutoCloseable {
 
-    static Guard EMPTY_GUARD = () -> {};
+    Guard EMPTY_GUARD = () -> {};
 
     /**
      * Releases this guard. Does not throw.
@@ -23,20 +23,26 @@ public interface Guard extends AutoCloseable {
     /**
      * Returns a guard that is a composition of multiple guards.
      * Its {@code close()} method closes the guards in reverse order.
+     *
      * @param guards guards that should be released (in reverse order)
-     * when the returned guards is released.
+     *               when the returned guards is released.
      */
     static Guard multi(Guard... guards) {
-        switch(guards.length) {
-            case 0: return EMPTY_GUARD;
-            case 1: return guards[0];
-            case 2: return new BiGuard(guards[0], guards[1]);
-            default: return new MultiGuard(guards);
+        switch (guards.length) {
+        case 0:
+            return EMPTY_GUARD;
+        case 1:
+            return guards[0];
+        case 2:
+            return new BiGuard(guards[0], guards[1]);
+        default:
+            return new MultiGuard(guards);
         }
     }
 }
 
 class CloseableOnceGuard implements Guard {
+
     private Guard delegate;
 
     public CloseableOnceGuard(Guard delegate) {
@@ -45,7 +51,7 @@ class CloseableOnceGuard implements Guard {
 
     @Override
     public void close() {
-        if(delegate != null) {
+        if (delegate != null) {
             delegate.close();
             delegate = null;
         }
@@ -53,6 +59,7 @@ class CloseableOnceGuard implements Guard {
 }
 
 class BiGuard implements Guard {
+
     private final Guard g1;
     private final Guard g2;
 
@@ -70,6 +77,7 @@ class BiGuard implements Guard {
 }
 
 class MultiGuard implements Guard {
+
     private final Guard[] guards;
 
     public MultiGuard(Guard... guards) {
@@ -79,7 +87,7 @@ class MultiGuard implements Guard {
     @Override
     public void close() {
         // close in reverse order
-        for(int i = guards.length - 1; i >= 0; --i) {
+        for (int i = guards.length - 1; i >= 0; --i) {
             guards[i].close();
         }
     }

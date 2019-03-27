@@ -2,15 +2,15 @@ package org.reactfx;
 
 import java.util.function.Supplier;
 
+import org.reactfx.util.ListHelper;
+
 import javafx.beans.InvalidationListener;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableBooleanValue;
 
-import org.reactfx.util.ListHelper;
-
 /**
  * @deprecated Indicator is unsafe on recursion: it may report misleading
- * changes. Use {@link SuspendableNo} instead.
+ *     changes. Use {@link SuspendableNo} instead.
  */
 @Deprecated
 public class Indicator implements ObservableBooleanValue, Guardian {
@@ -22,11 +22,12 @@ public class Indicator implements ObservableBooleanValue, Guardian {
 
     /**
      * Turns this indicator on.
+     *
      * @return a Guard that, when closed, resets this indicator to the
-     * original state.
+     *     original state.
      */
     public Guard on() {
-        if(++on == 1) {
+        if (++on == 1) {
             notifyListeners(true);
         }
 
@@ -35,7 +36,7 @@ public class Indicator implements ObservableBooleanValue, Guardian {
 
     private void release() {
         assert on > 0;
-        if(--on == 0) {
+        if (--on == 0) {
             notifyListeners(false);
         }
     }
@@ -60,7 +61,7 @@ public class Indicator implements ObservableBooleanValue, Guardian {
      * </pre>
      */
     public void onWhile(Runnable r) {
-        try(Guard g = on()) {
+        try (Guard g = on()) {
             r.run();
         }
     }
@@ -83,7 +84,7 @@ public class Indicator implements ObservableBooleanValue, Guardian {
      * </pre>
      */
     public <T> T onWhile(Supplier<T> f) {
-        try(Guard g = on()) {
+        try (Guard g = on()) {
             return f.get();
         }
     }

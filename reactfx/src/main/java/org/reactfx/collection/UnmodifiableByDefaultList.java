@@ -31,20 +31,24 @@ public interface UnmodifiableByDefaultList<E> extends AccessorListMethods<E> {
 
     @Override
     default boolean addAll(Collection<? extends E> c) {
-        for(E e: c) add(e);
+        for (E e : c) {
+            add(e);
+        }
         return !c.isEmpty();
     }
 
     @Override
     default boolean addAll(int index, Collection<? extends E> c) {
-        for(E e: c) add(index++, e);
+        for (E e : c) {
+            add(index++, e);
+        }
         return !c.isEmpty();
     }
 
     @Override
     default boolean remove(Object o) {
         int i = indexOf(o);
-        if(i != -1) {
+        if (i != -1) {
             remove(i);
             return true;
         } else {
@@ -60,8 +64,8 @@ public interface UnmodifiableByDefaultList<E> extends AccessorListMethods<E> {
     @Override
     default boolean retainAll(Collection<?> c) {
         boolean changed = false;
-        for(int i = size() - 1; i >= 0; --i) {
-            if(!c.contains(get(i))) {
+        for (int i = size() - 1; i >= 0; --i) {
+            if (!c.contains(get(i))) {
                 remove(i);
                 changed = true;
             }
@@ -71,7 +75,7 @@ public interface UnmodifiableByDefaultList<E> extends AccessorListMethods<E> {
 
     @Override
     default void clear() {
-        for(int i = size() - 1; i >= 0; --i) {
+        for (int i = size() - 1; i >= 0; --i) {
             remove(i);
         }
     }

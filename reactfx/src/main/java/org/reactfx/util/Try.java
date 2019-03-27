@@ -19,26 +19,39 @@ public interface Try<T> extends Either<Throwable, T> {
     static <T> Try<T> tryGet(Callable<? extends T> f) {
         try {
             return success(f.call());
-        } catch(Throwable t) {
+        } catch (Throwable t) {
             return failure(t);
         }
     }
 
     default boolean isSuccess() { return isRight(); }
+
     default boolean isFailure() { return isLeft(); }
+
     default T get() { return getRight(); }
+
     default Throwable getFailure() { return getLeft(); }
+
     default Optional<T> toOptional() { return asRight(); }
+
     default void ifSuccess(Consumer<? super T> f) { ifRight(f); }
+
     default void ifFailure(Consumer<? super Throwable> f) { ifLeft(f); }
 
     T getOrElse(T fallback);
+
     T getOrElse(Supplier<T> fallback);
+
     Try<T> orElse(Try<T> fallback);
+
     Try<T> orElse(Supplier<Try<T>> fallback);
+
     Try<T> orElseTry(Callable<? extends T> fallback);
+
     Try<T> recover(Function<Throwable, Optional<T>> f);
+
     <U> Try<U> map(Function<? super T, ? extends U> f);
+
     <U> Try<U> flatMap(Function<? super T, Try<U>> f);
 }
 
@@ -102,7 +115,7 @@ class Failure<T> extends Left<Throwable, T> implements Try<T> {
     @Override
     public Try<T> recover(Function<Throwable, Optional<T>> f) {
         Optional<T> recovered = f.apply(getFailure());
-        if(recovered.isPresent()) {
+        if (recovered.isPresent()) {
             return new Success<>(recovered.get());
         } else {
             return this;

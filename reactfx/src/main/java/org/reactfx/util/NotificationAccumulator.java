@@ -58,18 +58,25 @@ public interface NotificationAccumulator<O, V, A> {
     /* Interface methods */
 
     boolean isEmpty();
+
     Runnable takeOne();
+
     void addAll(Iterator<O> observers, V value);
+
     void clear();
+
     AccumulationFacility<V, A> getAccumulationFacility();
 }
 
 abstract class NotificationAccumulatorBase<O, V, A>
-implements NotificationAccumulator<O, V, A>, AccumulationFacility<V, A> {
+        implements NotificationAccumulator<O, V, A>, AccumulationFacility<V, A> {
+
     private AccuMap<O, V, A> accuMap = AccuMap.empty();
 
     protected abstract AccumulatorSize size(O observer, A accumulatedValue);
+
     protected abstract Runnable head(O observer, A accumulatedValue);
+
     protected abstract A tail(O observer, A accumulatedValue);
 
     @Override
@@ -85,20 +92,20 @@ implements NotificationAccumulator<O, V, A>, AccumulationFacility<V, A> {
     @Override
     public Runnable takeOne() {
         Tuple2<O, A> t = accuMap.peek(this);
-        switch(t.map(this::size)) {
-            case ZERO:
-                accuMap = accuMap.dropPeeked();
-                return () -> {};
-            case ONE:
-                accuMap = accuMap.dropPeeked();
-                return t.map(this::head);
-            case MANY:
-                Runnable notification = t.map(this::head);
-                A newAccumulatedValue = t.map(this::tail);
-                accuMap = accuMap.updatePeeked(newAccumulatedValue);
-                return notification;
-            default:
-                throw new AssertionError("Unreachable code");
+        switch (t.map(this::size)) {
+        case ZERO:
+            accuMap = accuMap.dropPeeked();
+            return () -> {};
+        case ONE:
+            accuMap = accuMap.dropPeeked();
+            return t.map(this::head);
+        case MANY:
+            Runnable notification = t.map(this::head);
+            A newAccumulatedValue = t.map(this::tail);
+            accuMap = accuMap.updatePeeked(newAccumulatedValue);
+            return notification;
+        default:
+            throw new AssertionError("Unreachable code");
         }
     }
 
@@ -119,8 +126,8 @@ implements NotificationAccumulator<O, V, A>, AccumulationFacility<V, A> {
  * ******************** */
 
 final class NonAccumulativeStreamNotifications<T>
-extends NotificationAccumulatorBase<Consumer<? super T>, T, T>
-implements AccumulationFacility.NoAccumulation<T> {
+        extends NotificationAccumulatorBase<Consumer<? super T>, T, T>
+        implements AccumulationFacility.NoAccumulation<T> {
 
     @Override
     protected AccumulatorSize size(
@@ -146,7 +153,8 @@ implements AccumulationFacility.NoAccumulation<T> {
  * ******************* */
 
 final class AccumulativeStreamNotifications<T, A>
-extends NotificationAccumulatorBase<Consumer<? super T>, T, A> {
+        extends NotificationAccumulatorBase<Consumer<? super T>, T, A> {
+
     private final Function<? super A, AccumulatorSize> size;
     private final Function<? super A, ? extends T> head;
     private final Function<? super A, ? extends A> tail;
@@ -179,7 +187,7 @@ extends NotificationAccumulatorBase<Consumer<? super T>, T, A> {
 
     @Override
     protected A tail(Consumer<? super T> observer, A accumulatedValue) {
-        return tail.apply( accumulatedValue);
+        return tail.apply(accumulatedValue);
     }
 
     @Override
@@ -199,8 +207,8 @@ extends NotificationAccumulatorBase<Consumer<? super T>, T, A> {
  * ************** */
 
 final class QueuingStreamNotifications<T>
-extends NotificationAccumulatorBase<Consumer<? super T>, T, Deque<T>>
-implements AccumulationFacility.Queuing<T> {
+        extends NotificationAccumulatorBase<Consumer<? super T>, T, Deque<T>>
+        implements AccumulationFacility.Queuing<T> {
 
     @Override
     protected AccumulatorSize size(
@@ -233,8 +241,8 @@ implements AccumulationFacility.Queuing<T> {
  * *************** */
 
 abstract class AbstractReducingStreamNotifications<T>
-extends NotificationAccumulatorBase<Consumer<? super T>, T, T>
-implements AccumulationFacility.HomotypicAccumulation<T> {
+        extends NotificationAccumulatorBase<Consumer<? super T>, T, T>
+        implements AccumulationFacility.HomotypicAccumulation<T> {
 
     @Override
     protected final AccumulatorSize size(
@@ -255,7 +263,8 @@ implements AccumulationFacility.HomotypicAccumulation<T> {
 }
 
 final class ReducingStreamNotifications<T>
-extends AbstractReducingStreamNotifications<T> {
+        extends AbstractReducingStreamNotifications<T> {
+
     private final BinaryOperator<T> reduction;
 
     ReducingStreamNotifications(BinaryOperator<T> reduction) {
@@ -274,8 +283,8 @@ extends AbstractReducingStreamNotifications<T> {
  * ******************** */
 
 final class RetainLatestStreamNotifications<T>
-extends AbstractReducingStreamNotifications<T>
-implements AccumulationFacility.RetainLatest<T> {}
+        extends AbstractReducingStreamNotifications<T>
+        implements AccumulationFacility.RetainLatest<T> {}
 
 
 /* ***************** *
@@ -283,8 +292,8 @@ implements AccumulationFacility.RetainLatest<T> {}
  * ***************** */
 
 final class RetailOldestValNotifications<T>
-extends AbstractReducingStreamNotifications<T>
-implements AccumulationFacility.RetainOldest<T> {}
+        extends AbstractReducingStreamNotifications<T>
+        implements AccumulationFacility.RetainOldest<T> {}
 
 
 
@@ -293,8 +302,8 @@ implements AccumulationFacility.RetainOldest<T> {}
  * ************************ */
 
 final class ListNotifications<E>
-extends NotificationAccumulatorBase<LiveList.Observer<? super E, ?>, QuasiListChange<? extends E>, ListModificationSequence<E>>
-implements AccumulationFacility.ListChangeAccumulation<E> {
+        extends NotificationAccumulatorBase<LiveList.Observer<? super E, ?>, QuasiListChange<? extends E>, ListModificationSequence<E>>
+        implements AccumulationFacility.ListChangeAccumulation<E> {
 
     @Override
     protected AccumulatorSize size(

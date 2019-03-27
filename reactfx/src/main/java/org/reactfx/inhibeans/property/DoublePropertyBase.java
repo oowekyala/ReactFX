@@ -7,8 +7,8 @@ import org.reactfx.Guard;
  */
 @Deprecated
 public abstract class DoublePropertyBase
-extends javafx.beans.property.DoublePropertyBase
-implements Property<Number> {
+        extends javafx.beans.property.DoublePropertyBase
+        implements Property<Number> {
 
     private int blocked = 0;
     private boolean fireOnRelease = false;
@@ -21,7 +21,7 @@ implements Property<Number> {
 
     private void release() {
         assert blocked > 0;
-        if(--blocked == 0 && fireOnRelease) {
+        if (--blocked == 0 && fireOnRelease) {
             fireOnRelease = false;
             super.fireValueChangedEvent();
         }
@@ -29,7 +29,7 @@ implements Property<Number> {
 
     @Override
     protected void fireValueChangedEvent() {
-        if(blocked > 0) {
+        if (blocked > 0) {
             fireOnRelease = true;
         } else {
             super.fireValueChangedEvent();

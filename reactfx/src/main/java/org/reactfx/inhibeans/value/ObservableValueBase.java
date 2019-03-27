@@ -4,8 +4,8 @@ import org.reactfx.Guard;
 
 @Deprecated
 public abstract class ObservableValueBase<T>
-extends javafx.beans.value.ObservableValueBase<T>
-implements ObservableValue<T> {
+        extends javafx.beans.value.ObservableValueBase<T>
+        implements ObservableValue<T> {
 
     private int blocked = 0;
     private boolean fireOnRelease = false;
@@ -18,7 +18,7 @@ implements ObservableValue<T> {
 
     private void release() {
         assert blocked > 0;
-        if(--blocked == 0 && fireOnRelease) {
+        if (--blocked == 0 && fireOnRelease) {
             fireOnRelease = false;
             super.fireValueChangedEvent();
         }
@@ -26,7 +26,7 @@ implements ObservableValue<T> {
 
     @Override
     protected void fireValueChangedEvent() {
-        if(blocked > 0) {
+        if (blocked > 0) {
             fireOnRelease = true;
         } else {
             super.fireValueChangedEvent();

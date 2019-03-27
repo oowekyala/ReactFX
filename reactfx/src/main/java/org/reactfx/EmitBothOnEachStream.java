@@ -1,6 +1,6 @@
 package org.reactfx;
 
-import static org.reactfx.util.Tuples.*;
+import static org.reactfx.util.Tuples.t;
 
 import org.reactfx.util.Tuple2;
 
@@ -8,6 +8,7 @@ import org.reactfx.util.Tuple2;
  * {@link EventStream#emitBothOnEach(EventStream)}
  */
 class EmitBothOnEachStream<A, I> extends EventStreamBase<Tuple2<A, I>> {
+
     private final EventStream<A> source;
     private final EventStream<I> impulse;
 
@@ -27,7 +28,7 @@ class EmitBothOnEachStream<A, I> extends EventStreamBase<Tuple2<A, I>> {
         });
 
         Subscription s2 = impulse.subscribe(i -> {
-            if(hasValue) {
+            if (hasValue) {
                 emit(t(a, i));
             }
         });

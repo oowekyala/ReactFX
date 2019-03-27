@@ -5,6 +5,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 class AccumulateBetweenStream<T, A> extends EventStreamBase<T> {
+
     private final EventStream<T> source;
     private final EventStream<?> ticks;
     private final Function<? super T, ? extends A> initialTransformation;
@@ -35,7 +36,7 @@ class AccumulateBetweenStream<T, A> extends EventStreamBase<T> {
     }
 
     private void handleEvent(T event) {
-        if(hasValue) {
+        if (hasValue) {
             accum = accumulation.apply(accum, event);
         } else {
             accum = initialTransformation.apply(event);
@@ -44,10 +45,10 @@ class AccumulateBetweenStream<T, A> extends EventStreamBase<T> {
     }
 
     private void handleTick(Object tick) {
-        if(hasValue) {
+        if (hasValue) {
             List<T> toEmit = deconstruction.apply(accum);
             reset();
-            for(T t: toEmit) {
+            for (T t : toEmit) {
                 emit(t);
             }
         }

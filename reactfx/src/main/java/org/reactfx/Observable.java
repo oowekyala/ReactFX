@@ -1,9 +1,9 @@
 package org.reactfx;
 
+import org.reactfx.value.Val;
+
 import javafx.beans.InvalidationListener;
 import javafx.beans.value.ChangeListener;
-
-import org.reactfx.value.Val;
 
 /**
  * Anything that can be <em>observed</em>, that is have an <em>observer</em>
@@ -31,7 +31,9 @@ import org.reactfx.value.Val;
  * @param <O> observer type accepted by this {@linkplain Observable}
  */
 public interface Observable<O> {
+
     void addObserver(O observer);
+
     void removeObserver(O observer);
 
     default Subscription observe(O observer) {

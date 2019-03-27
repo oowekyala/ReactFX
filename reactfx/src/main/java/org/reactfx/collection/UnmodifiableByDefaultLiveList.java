@@ -9,7 +9,7 @@ import javafx.collections.ObservableList;
  * Provides default implementations of mutating list methods.
  */
 public interface UnmodifiableByDefaultLiveList<E>
-extends ObservableList<E>, UnmodifiableByDefaultList<E> {
+        extends ObservableList<E>, UnmodifiableByDefaultList<E> {
 
     @Override
     default boolean addAll(@SuppressWarnings("unchecked") E... elems) {

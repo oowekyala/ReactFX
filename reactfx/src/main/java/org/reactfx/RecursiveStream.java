@@ -6,6 +6,7 @@ import org.reactfx.util.NotificationAccumulator;
 
 
 class RecursiveStream<T> extends EventStreamBase<T> {
+
     private final EventStream<T> input;
 
     public RecursiveStream(

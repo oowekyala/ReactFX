@@ -44,10 +44,10 @@ class FlatValList<T> extends LiveListBase<T> implements UnmodifiableByDefaultLiv
     protected Subscription observeInputs() {
 
         return Subscription.multi(
-            LiveList.observeQuasiChanges(mapped, this::notifyObservers),
-            Subscription.dynamic(mySource,
-                                 (element, i) -> Val.observeChanges(element,
-                                                                    (obs, oldV, newV) -> componentChanged(i, oldV, newV)))
+                LiveList.observeQuasiChanges(mapped, this::notifyObservers),
+                Subscription.dynamic(mySource,
+                                     (element, i) -> Val.observeChanges(element,
+                                                                        (obs, oldV, newV) -> componentChanged(i, oldV, newV)))
         );
     }
 
@@ -59,7 +59,7 @@ class FlatValList<T> extends LiveListBase<T> implements UnmodifiableByDefaultLiv
 
     private static <T> QuasiListChange<T> componentChange(int sourceIdx, T oldV, T newV) {
         return () -> singletonList(
-            QuasiListModification.create(sourceIdx, singletonList(oldV), 1)
+                QuasiListModification.create(sourceIdx, singletonList(oldV), 1)
         );
     }
 }

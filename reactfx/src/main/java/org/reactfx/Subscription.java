@@ -14,6 +14,7 @@ import javafx.collections.ObservableSet;
 
 @FunctionalInterface
 public interface Subscription {
+
     void unsubscribe();
 
     /**
@@ -32,11 +33,15 @@ public interface Subscription {
      * method calls {@code unsubscribe()} on all arguments to this method.
      */
     static Subscription multi(Subscription... subs) {
-        switch(subs.length) {
-            case 0: return EMPTY;
-            case 1: return subs[0];
-            case 2: return new BiSubscription(subs[0], subs[1]);
-            default: return new MultiSubscription(subs);
+        switch (subs.length) {
+        case 0:
+            return EMPTY;
+        case 1:
+            return subs[0];
+        case 2:
+            return new BiSubscription(subs[0], subs[1]);
+        default:
+            return new MultiSubscription(subs);
         }
     }
 
@@ -49,7 +54,7 @@ public interface Subscription {
             Function<? super T, ? extends Subscription> f,
             T... elems) {
         return multi(Stream.of(elems).map(f)
-                .<Subscription>toArray(Subscription[]::new));
+                             .toArray(Subscription[]::new));
     }
 
     /**
@@ -61,7 +66,7 @@ public interface Subscription {
             Function<? super T, ? extends Subscription> f,
             Collection<T> elems) {
         return multi(elems.stream().map(f)
-                .<Subscription>toArray(Subscription[]::new));
+                             .toArray(Subscription[]::new));
     }
 
     /**
@@ -69,12 +74,14 @@ public interface Subscription {
      * When an element is added to the set, it is automatically subscribed to.
      * When an element is removed from the set, it is automatically unsubscribed
      * from.
+     *
      * @param elems observable set of elements that will be subscribed to
-     * @param f function to subscribe to an element of the set.
+     * @param f     function to subscribe to an element of the set.
+     *
      * @return An aggregate subscription that tracks elementary subscriptions.
-     * When the returned subscription is unsubscribed, all elementary
-     * subscriptions are unsubscribed as well, and no new elementary
-     * subscriptions will be created.
+     *     When the returned subscription is unsubscribed, all elementary
+     *     subscriptions are unsubscribed as well, and no new elementary
+     *     subscriptions will be created.
      */
     static <T> Subscription dynamic(
             ObservableSet<T> elems,
@@ -84,12 +91,12 @@ public interface Subscription {
         elems.forEach(t -> elemSubs.put(t, f.apply(t)));
 
         Subscription setSub = EventStreams.changesOf(elems).subscribe(ch -> {
-            if(ch.wasRemoved()) {
+            if (ch.wasRemoved()) {
                 Subscription sub = elemSubs.remove(ch.getElementRemoved());
                 assert sub != null;
                 sub.unsubscribe();
             }
-            if(ch.wasAdded()) {
+            if (ch.wasAdded()) {
                 T elem = ch.getElementAdded();
                 assert !elemSubs.containsKey(elem);
                 elemSubs.put(elem, f.apply(elem));
@@ -115,9 +122,9 @@ public interface Subscription {
      * @param <T>   Type of elements
      *
      * @return An aggregate subscription that tracks elementary subscriptions.
-     * When the returned subscription is unsubscribed, all elementary
-     * subscriptions are unsubscribed as well, and no new elementary
-     * subscriptions will be created.
+     *     When the returned subscription is unsubscribed, all elementary
+     *     subscriptions are unsubscribed as well, and no new elementary
+     *     subscriptions will be created.
      *
      * @since RFXX
      */
@@ -172,9 +179,9 @@ public interface Subscription {
      * @param <T>   Type of elements
      *
      * @return An aggregate subscription that tracks elementary subscriptions.
-     * When the returned subscription is unsubscribed, all elementary
-     * subscriptions are unsubscribed as well, and no new elementary
-     * subscriptions will be created.
+     *     When the returned subscription is unsubscribed, all elementary
+     *     subscriptions are unsubscribed as well, and no new elementary
+     *     subscriptions will be created.
      *
      * @since RFXX
      */
@@ -184,6 +191,7 @@ public interface Subscription {
 }
 
 class BiSubscription implements Subscription {
+
     private final Subscription s1;
     private final Subscription s2;
 
@@ -200,6 +208,7 @@ class BiSubscription implements Subscription {
 }
 
 class MultiSubscription implements Subscription {
+
     private final Subscription[] subscriptions;
 
     public MultiSubscription(Subscription... subscriptions) {
@@ -208,7 +217,7 @@ class MultiSubscription implements Subscription {
 
     @Override
     public void unsubscribe() {
-        for(Subscription s: subscriptions) {
+        for (Subscription s : subscriptions) {
             s.unsubscribe();
         }
     }

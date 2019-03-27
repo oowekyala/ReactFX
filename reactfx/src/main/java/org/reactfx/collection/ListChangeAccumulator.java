@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javafx.collections.ListChangeListener;
-
 import org.reactfx.util.Lists;
 
+import javafx.collections.ListChangeListener;
+
 public final class ListChangeAccumulator<E> implements ListModificationSequence<E> {
+
     private QuasiListChangeImpl<E> modifications = new QuasiListChangeImpl<>();
 
     public ListChangeAccumulator() {}
@@ -48,21 +49,21 @@ public final class ListChangeAccumulator<E> implements ListModificationSequence<
     }
 
     public ListChangeAccumulator<E> add(QuasiListModification<? extends E> mod) {
-        if(modifications.isEmpty()) {
+        if (modifications.isEmpty()) {
             modifications.add(mod);
         } else {
             // find first and last overlapping modification
             int from = mod.getFrom();
             int to = from + mod.getRemovedSize();
             int firstOverlapping = 0;
-            for(; firstOverlapping < modifications.size(); ++firstOverlapping) {
-                if(modifications.get(firstOverlapping).getTo() >= from) {
+            for (; firstOverlapping < modifications.size(); ++firstOverlapping) {
+                if (modifications.get(firstOverlapping).getTo() >= from) {
                     break;
                 }
             }
             int lastOverlapping = modifications.size() - 1;
-            for(; lastOverlapping >= 0; --lastOverlapping) {
-                if(modifications.get(lastOverlapping).getFrom() <= to) {
+            for (; lastOverlapping >= 0; --lastOverlapping) {
+                if (modifications.get(lastOverlapping).getFrom() <= to) {
                     break;
                 }
             }
@@ -72,10 +73,11 @@ public final class ListChangeAccumulator<E> implements ListModificationSequence<
             offsetPendingModifications(lastOverlapping + 1, diff);
 
             // combine overlapping modifications into one
-            if(lastOverlapping < firstOverlapping) { // no overlap
+            if (lastOverlapping < firstOverlapping) { // no overlap
                 modifications.add(firstOverlapping, mod);
             } else { // overlaps one or more former modifications
-                List<QuasiListModification<? extends E>> overlapping = modifications.subList(firstOverlapping, lastOverlapping + 1);
+                List<QuasiListModification<? extends E>> overlapping = modifications.subList(firstOverlapping,
+                                                                                             lastOverlapping + 1);
                 QuasiListModification<? extends E> joined = join(overlapping, mod.getRemoved(), mod.getFrom());
                 QuasiListModification<E> newMod = combine(joined, mod);
                 overlapping.clear();
@@ -87,7 +89,7 @@ public final class ListChangeAccumulator<E> implements ListModificationSequence<
     }
 
     public ListChangeAccumulator<E> add(QuasiListChange<? extends E> change) {
-        for(QuasiListModification<? extends E> mod: change) {
+        for (QuasiListModification<? extends E> mod : change) {
             add(mod);
         }
 
@@ -95,7 +97,7 @@ public final class ListChangeAccumulator<E> implements ListModificationSequence<
     }
 
     public ListChangeAccumulator<E> add(ListChangeListener.Change<? extends E> change) {
-        while(change.next()) {
+        while (change.next()) {
             add(QuasiListModification.fromCurrentStateOf(change));
         }
 
@@ -104,10 +106,10 @@ public final class ListChangeAccumulator<E> implements ListModificationSequence<
 
     private void offsetPendingModifications(int from, int offset) {
         modifications.subList(from, modifications.size())
-                .replaceAll(mod -> new QuasiListModificationImpl<>(
-                        mod.getFrom() + offset,
-                        mod.getRemoved(),
-                        mod.getAddedSize()));
+                     .replaceAll(mod -> new QuasiListModificationImpl<>(
+                             mod.getFrom() + offset,
+                             mod.getRemoved(),
+                             mod.getAddedSize()));
     }
 
     private static <E> QuasiListModification<? extends E> join(
@@ -115,15 +117,15 @@ public final class ListChangeAccumulator<E> implements ListModificationSequence<
             List<? extends E> gone,
             int goneOffset) {
 
-        if(mods.size() == 1) {
+        if (mods.size() == 1) {
             return mods.get(0);
         }
 
-        List<List<? extends E>> removedLists = new ArrayList<>(2*mods.size() - 1);
+        List<List<? extends E>> removedLists = new ArrayList<>(2 * mods.size() - 1);
         QuasiListModification<? extends E> prev = mods.get(0);
         int from = prev.getFrom();
         removedLists.add(prev.getRemoved());
-        for(int i = 1; i < mods.size(); ++i) {
+        for (int i = 1; i < mods.size(); ++i) {
             QuasiListModification<? extends E> m = mods.get(i);
             removedLists.add(gone.subList(prev.getTo() - goneOffset, m.getFrom() - goneOffset));
             removedLists.add(m.getRemoved());
@@ -137,19 +139,20 @@ public final class ListChangeAccumulator<E> implements ListModificationSequence<
             QuasiListModification<? extends E> former,
             QuasiListModification<? extends E> latter) {
 
-        if(latter.getFrom() >= former.getFrom() && latter.getFrom() + latter.getRemovedSize() <= former.getTo()) {
+        if (latter.getFrom() >= former.getFrom() && latter.getFrom() + latter.getRemovedSize() <= former.getTo()) {
             // latter is within former
             List<? extends E> removed = former.getRemoved();
             int addedSize = former.getAddedSize() - latter.getRemovedSize() + latter.getAddedSize();
             return new QuasiListModificationImpl<>(former.getFrom(), removed, addedSize);
-        } else if(latter.getFrom() <= former.getFrom() && latter.getFrom() + latter.getRemovedSize() >= former.getTo()) {
+        } else if (latter.getFrom() <= former.getFrom()
+                && latter.getFrom() + latter.getRemovedSize() >= former.getTo()) {
             // former is within latter
             List<E> removed = Lists.concat(
                     latter.getRemoved().subList(0, former.getFrom() - latter.getFrom()),
                     former.getRemoved(),
                     latter.getRemoved().subList(former.getTo() - latter.getFrom(), latter.getRemovedSize()));
             return new QuasiListModificationImpl<>(latter.getFrom(), removed, latter.getAddedSize());
-        } else if(latter.getFrom() >= former.getFrom()) {
+        } else if (latter.getFrom() >= former.getFrom()) {
             // latter overlaps to the right
             List<E> removed = Lists.concat(
                     former.getRemoved(),

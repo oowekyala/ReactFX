@@ -4,6 +4,7 @@ package org.reactfx;
  * @see org.reactfx.EventStream#emitOn(EventStream)
  */
 class EmitOnStream<T> extends EventStreamBase<T> {
+
     private final EventStream<T> source;
     private final EventStream<?> impulse;
 
@@ -23,7 +24,7 @@ class EmitOnStream<T> extends EventStreamBase<T> {
         });
 
         Subscription s2 = impulse.subscribe(i -> {
-            if(hasValue) {
+            if (hasValue) {
                 T val = value;
                 hasValue = false;
                 value = null;

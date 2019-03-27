@@ -9,5 +9,6 @@ import org.reactfx.util.Experimental;
  */
 @Experimental
 public interface Suspender<S extends Suspendable> {
+
     S getSuspendable();
 }

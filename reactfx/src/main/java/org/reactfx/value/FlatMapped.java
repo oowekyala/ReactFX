@@ -3,14 +3,15 @@ package org.reactfx.value;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import org.reactfx.Subscription;
+
 import javafx.beans.property.Property;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
-import org.reactfx.Subscription;
-
 abstract class FlatMapped<T, U, O extends ObservableValue<U>>
-extends ValBase<U> {
+        extends ValBase<U> {
+
     final Val<O> src;
 
     private Subscription selectedSubscription = null; // irrelevant when not connected
@@ -22,12 +23,12 @@ extends ValBase<U> {
     @Override
     protected final Subscription connect() {
         return Val.observeInvalidations(src, obs -> srcInvalidated())
-                .and(this::stopObservingSelected);
+                  .and(this::stopObservingSelected);
     }
 
     @Override
     protected final U computeValue() {
-        if(isObservingInputs()) {
+        if (isObservingInputs()) {
             startObservingSelected();
         }
         return src.getOpt().map(O::getValue).orElse(null);
@@ -35,7 +36,7 @@ extends ValBase<U> {
 
     private void startObservingSelected() {
         assert isObservingInputs();
-        if(selectedSubscription == null) {
+        if (selectedSubscription == null) {
             src.ifPresent(sel -> {
                 selectedSubscription = Val.observeInvalidations(
                         sel, obs -> selectedInvalidated());
@@ -44,7 +45,7 @@ extends ValBase<U> {
     }
 
     private void stopObservingSelected() {
-        if(selectedSubscription != null) {
+        if (selectedSubscription != null) {
             selectedSubscription.unsubscribe();
             selectedSubscription = null;
         }
@@ -61,7 +62,7 @@ extends ValBase<U> {
 }
 
 class FlatMappedVal<T, U, O extends ObservableValue<U>>
-extends FlatMapped<T, U, O> {
+        extends FlatMapped<T, U, O> {
 
     public FlatMappedVal(ObservableValue<T> src, Function<? super T, O> f) {
         super(src, f);
@@ -69,8 +70,9 @@ extends FlatMapped<T, U, O> {
 }
 
 class FlatMappedVar<T, U, O extends Property<U>>
-extends FlatMapped<T, U, O>
-implements Var<U> {
+        extends FlatMapped<T, U, O>
+        implements Var<U> {
+
     private final ChangeListener<O> srcListenerWhenBound;
 
     private ObservableValue<? extends U> boundTo = null;
@@ -93,11 +95,11 @@ implements Var<U> {
         super(src, f);
         srcListenerWhenBound = (obs, oldProperty, newProperty) -> {
             assert boundTo != null;
-            if(oldProperty != null) {
+            if (oldProperty != null) {
                 oldProperty.unbind();
                 onUnbind.accept(oldProperty);
             }
-            if(newProperty != null) {
+            if (newProperty != null) {
                 newProperty.bind(boundTo);
             }
         };
@@ -113,11 +115,11 @@ implements Var<U> {
 
     @Override
     public void bind(ObservableValue<? extends U> other) {
-        if(other == null) {
+        if (other == null) {
             throw new IllegalArgumentException("Cannot bind to null");
         }
 
-        if(boundTo == null) {
+        if (boundTo == null) {
             src.addListener(srcListenerWhenBound);
         }
         src.ifPresent(sel -> sel.bind(other));
@@ -126,7 +128,7 @@ implements Var<U> {
 
     @Override
     public void unbind() {
-        if(boundTo != null) {
+        if (boundTo != null) {
             src.removeListener(srcListenerWhenBound);
             src.ifPresent(Property::unbind);
             boundTo = null;

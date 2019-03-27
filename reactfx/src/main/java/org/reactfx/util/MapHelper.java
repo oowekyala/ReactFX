@@ -11,7 +11,7 @@ import java.util.function.BiFunction;
 public abstract class MapHelper<K, V> {
 
     public static <K, V> MapHelper<K, V> put(MapHelper<K, V> mapHelper, K key, V value) {
-        if(mapHelper == null) {
+        if (mapHelper == null) {
             return new SingleEntryHelper<>(key, value);
         } else {
             return mapHelper.put(key, value);
@@ -19,7 +19,7 @@ public abstract class MapHelper<K, V> {
     }
 
     public static <K, V> V get(MapHelper<K, V> mapHelper, K key) {
-        if(mapHelper == null) {
+        if (mapHelper == null) {
             return null;
         } else {
             return mapHelper.get(key);
@@ -27,7 +27,7 @@ public abstract class MapHelper<K, V> {
     }
 
     public static <K, V> MapHelper<K, V> remove(MapHelper<K, V> mapHelper, K key) {
-        if(mapHelper == null) {
+        if (mapHelper == null) {
             return mapHelper;
         } else {
             return mapHelper.remove(key);
@@ -35,7 +35,7 @@ public abstract class MapHelper<K, V> {
     }
 
     public static <K, V> K chooseKey(MapHelper<K, V> mapHelper) {
-        if(mapHelper == null) {
+        if (mapHelper == null) {
             throw new NoSuchElementException("empty map");
         } else {
             return mapHelper.chooseKey();
@@ -45,13 +45,13 @@ public abstract class MapHelper<K, V> {
     public static <K, V> void replaceAll(
             MapHelper<K, V> mapHelper,
             BiFunction<? super K, ? super V, ? extends V> f) {
-        if(mapHelper != null) {
+        if (mapHelper != null) {
             mapHelper.replaceAll(f);
         }
     }
 
     public static <K, V> void forEach(MapHelper<K, V> mapHelper, BiConsumer<K, V> f) {
-        if(mapHelper != null) {
+        if (mapHelper != null) {
             mapHelper.forEach(f);
         }
     }
@@ -61,7 +61,7 @@ public abstract class MapHelper<K, V> {
     }
 
     public static <K, V> int size(MapHelper<K, V> mapHelper) {
-        if(mapHelper == null) {
+        if (mapHelper == null) {
             return 0;
         } else {
             return mapHelper.size();
@@ -69,7 +69,7 @@ public abstract class MapHelper<K, V> {
     }
 
     public static <K> boolean containsKey(MapHelper<K, ?> mapHelper, K key) {
-        if(mapHelper == null) {
+        if (mapHelper == null) {
             return false;
         } else {
             return mapHelper.containsKey(key);
@@ -78,7 +78,7 @@ public abstract class MapHelper<K, V> {
 
     private MapHelper() {
         // private constructor to prevent subclassing
-    };
+    }
 
     protected abstract MapHelper<K, V> put(K key, V value);
 
@@ -98,6 +98,7 @@ public abstract class MapHelper<K, V> {
 
 
     private static class SingleEntryHelper<K, V> extends MapHelper<K, V> {
+
         private final K key;
         private V value;
 
@@ -108,7 +109,7 @@ public abstract class MapHelper<K, V> {
 
         @Override
         protected MapHelper<K, V> put(K key, V value) {
-            if(Objects.equals(key, this.key)) {
+            if (Objects.equals(key, this.key)) {
                 return new SingleEntryHelper<>(key, value);
             } else {
                 return new MultiEntryHelper<>(this.key, this.value, key, value);
@@ -122,7 +123,7 @@ public abstract class MapHelper<K, V> {
 
         @Override
         protected MapHelper<K, V> remove(K key) {
-            if(Objects.equals(key, this.key)) {
+            if (Objects.equals(key, this.key)) {
                 return null;
             } else {
                 return this;
@@ -156,6 +157,7 @@ public abstract class MapHelper<K, V> {
     }
 
     private static class MultiEntryHelper<K, V> extends MapHelper<K, V> {
+
         private final Map<K, V> entries = new HashMap<>();
 
         public MultiEntryHelper(K k1, V v1, K k2, V v2) {
@@ -177,15 +179,15 @@ public abstract class MapHelper<K, V> {
         @Override
         protected MapHelper<K, V> remove(K key) {
             entries.remove(key);
-            switch(entries.size()) {
-                case 0:
-                    return null;
-                case 1:
-                    @SuppressWarnings("unchecked")
-                    Entry<K, V> entry = (Entry<K, V>) entries.entrySet().toArray(new Entry<?, ?>[1])[0];
-                    return new SingleEntryHelper<>(entry.getKey(), entry.getValue());
-                default:
-                    return this;
+            switch (entries.size()) {
+            case 0:
+                return null;
+            case 1:
+                @SuppressWarnings("unchecked")
+                Entry<K, V> entry = (Entry<K, V>) entries.entrySet().toArray(new Entry<?, ?>[1])[0];
+                return new SingleEntryHelper<>(entry.getKey(), entry.getValue());
+            default:
+                return this;
             }
         }
 
@@ -201,7 +203,7 @@ public abstract class MapHelper<K, V> {
 
         @Override
         protected void forEach(BiConsumer<K, V> f) {
-            for(Object entry: entries.entrySet().toArray()) {
+            for (Object entry : entries.entrySet().toArray()) {
                 @SuppressWarnings("unchecked")
                 Entry<K, V> e = (Entry<K, V>) entry;
                 f.accept(e.getKey(), e.getValue());

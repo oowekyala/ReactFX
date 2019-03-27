@@ -1,10 +1,11 @@
 package org.reactfx.value;
 
-import javafx.beans.value.ObservableValue;
-
 import org.reactfx.Subscription;
 
+import javafx.beans.value.ObservableValue;
+
 class OrElse<T> extends ValBase<T> {
+
     private final ObservableValue<? extends T> src;
     private final ObservableValue<? extends T> other;
 
@@ -26,7 +27,7 @@ class OrElse<T> extends ValBase<T> {
             invalidate();
         });
         Subscription sub2 = Val.observeInvalidations(other, obs -> {
-            if(!trySrc) {
+            if (!trySrc) {
                 invalidate();
             }
         });
@@ -35,13 +36,13 @@ class OrElse<T> extends ValBase<T> {
 
     @Override
     protected T computeValue() {
-        if(!isObservingInputs()) {
+        if (!isObservingInputs()) {
             T val = src.getValue();
             return val != null ? val : other.getValue();
         } else {
-            if(trySrc) {
+            if (trySrc) {
                 T val = src.getValue();
-                if(val != null) {
+                if (val != null) {
                     return val;
                 } else {
                     trySrc = false;

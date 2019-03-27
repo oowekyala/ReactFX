@@ -1,17 +1,17 @@
 package org.reactfx;
 
-import javafx.beans.value.ObservableBooleanValue;
-
 import org.reactfx.value.ValBase;
 
+import javafx.beans.value.ObservableBooleanValue;
+
 abstract class SuspendableBoolean extends ValBase<Boolean>
-implements ObservableBooleanValue, Toggle {
+        implements ObservableBooleanValue, Toggle {
 
     private int suspenders = 0;
 
     @Override
     public final Guard suspend() {
-        if(++suspenders == 1) {
+        if (++suspenders == 1) {
             invalidate();
         }
 
@@ -20,7 +20,7 @@ implements ObservableBooleanValue, Toggle {
 
     private void release() {
         assert suspenders > 0;
-        if(--suspenders == 0) {
+        if (--suspenders == 0) {
             invalidate();
         }
     }

@@ -3,8 +3,9 @@ package org.reactfx;
 import java.util.function.Consumer;
 
 class SuspenderStreamImpl<T, S extends Suspendable>
-extends SuspenderBase<Consumer<? super T>, T, S>
-implements SuspenderStream<T, S>, ProperEventStream<T> {
+        extends SuspenderBase<Consumer<? super T>, T, S>
+        implements SuspenderStream<T, S>, ProperEventStream<T> {
+
     private final EventStream<T> source;
 
     public SuspenderStreamImpl(EventStream<T> source, S suspendable) {

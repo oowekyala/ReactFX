@@ -6,6 +6,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 class AccumulateUntilLaterStream<T, A> extends EventStreamBase<T> {
+
     private final EventStream<T> source;
     private final Function<? super T, ? extends A> initialTransformation;
     private final BiFunction<? super A, ? super T, ? extends A> accumulation;
@@ -34,7 +35,7 @@ class AccumulateUntilLaterStream<T, A> extends EventStreamBase<T> {
     }
 
     private void handleEvent(T event) {
-        if(hasValue) {
+        if (hasValue) {
             accum = accumulation.apply(accum, event);
             // emission already scheduled
         } else {
@@ -49,7 +50,7 @@ class AccumulateUntilLaterStream<T, A> extends EventStreamBase<T> {
         hasValue = false;
         List<T> toEmit = deconstruction.apply(accum);
         accum = null;
-        for(T t: toEmit) {
+        for (T t : toEmit) {
             emit(t);
         }
     }

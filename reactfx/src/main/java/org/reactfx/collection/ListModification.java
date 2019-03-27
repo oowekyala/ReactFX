@@ -3,9 +3,9 @@ package org.reactfx.collection;
 import java.util.ArrayList;
 import java.util.List;
 
-import javafx.collections.ObservableList;
-
 import org.reactfx.util.Lists;
+
+import javafx.collections.ObservableList;
 
 public interface ListModification<E> extends ListModificationLike<E> {
 
@@ -22,7 +22,8 @@ public interface ListModification<E> extends ListModificationLike<E> {
 }
 
 final class ListModificationImpl<E>
-implements ListModification<E> {
+        implements ListModification<E> {
+
     private int position;
     private List<? extends E> removed;
     private int addedSize;
@@ -67,9 +68,9 @@ implements ListModification<E> {
     }
 
     @Override
-    public ListModification<E> trim()  {
+    public ListModification<E> trim() {
         return Lists.commonPrefixSuffixLengths(removed, getAddedSubList()).map((pref, suff) -> {
-            if(pref == 0 && suff == 0) {
+            if (pref == 0 && suff == 0) {
                 return this;
             } else {
                 return new ListModificationImpl<>(

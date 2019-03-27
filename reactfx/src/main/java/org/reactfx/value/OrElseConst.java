@@ -1,10 +1,11 @@
 package org.reactfx.value;
 
-import javafx.beans.value.ObservableValue;
-
 import org.reactfx.Subscription;
 
+import javafx.beans.value.ObservableValue;
+
 class OrElseConst<T> extends ValBase<T> {
+
     private final ObservableValue<? extends T> src;
     private final T other;
 

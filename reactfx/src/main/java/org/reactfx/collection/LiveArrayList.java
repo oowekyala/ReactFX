@@ -9,6 +9,7 @@ import java.util.List;
 import org.reactfx.Subscription;
 
 public final class LiveArrayList<E> extends LiveListBase<E> {
+
     private List<E> list;
 
     public LiveArrayList() {
@@ -103,7 +104,7 @@ public final class LiveArrayList<E> extends LiveListBase<E> {
     @Override
     public boolean remove(Object o) {
         int i = list.indexOf(o);
-        if(i != -1) {
+        if (i != -1) {
             remove(i);
             return true;
         } else {
@@ -114,14 +115,14 @@ public final class LiveArrayList<E> extends LiveListBase<E> {
     @Override
     public boolean removeAll(Collection<?> c) {
         ListChangeAccumulator<E> acc = new ListChangeAccumulator<E>();
-        for(Object o: c) {
+        for (Object o : c) {
             int i = list.indexOf(o);
-            if(i != -1) {
+            if (i != -1) {
                 E removed = list.remove(i);
                 acc.add(ProperLiveList.elemRemoval(i, removed));
             }
         }
-        if(acc.isEmpty()) {
+        if (acc.isEmpty()) {
             return false;
         } else {
             notifyObservers(acc.fetch());
@@ -138,14 +139,14 @@ public final class LiveArrayList<E> extends LiveListBase<E> {
     @Override
     public boolean retainAll(Collection<?> c) {
         ListChangeAccumulator<E> acc = new ListChangeAccumulator<E>();
-        for(int i = size() - 1; i >= 0; --i) {
+        for (int i = size() - 1; i >= 0; --i) {
             E elem = list.get(i);
-            if(!c.contains(elem)) {
+            if (!c.contains(elem)) {
                 list.remove(i);
                 acc.add(ProperLiveList.elemRemoval(i, elem));
             }
         }
-        if(acc.isEmpty()) {
+        if (acc.isEmpty()) {
             return false;
         } else {
             notifyObservers(acc.fetch());

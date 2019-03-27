@@ -7,8 +7,8 @@ import org.reactfx.Guard;
  */
 @Deprecated
 public class SimpleStringProperty
-extends javafx.beans.property.SimpleStringProperty
-implements Property<String> {
+        extends javafx.beans.property.SimpleStringProperty
+        implements Property<String> {
 
     private int blocked = 0;
     private boolean fireOnRelease = false;
@@ -21,7 +21,7 @@ implements Property<String> {
 
     private void release() {
         assert blocked > 0;
-        if(--blocked == 0 && fireOnRelease) {
+        if (--blocked == 0 && fireOnRelease) {
             fireOnRelease = false;
             super.fireValueChangedEvent();
         }
@@ -29,7 +29,7 @@ implements Property<String> {
 
     @Override
     protected void fireValueChangedEvent() {
-        if(blocked > 0) {
+        if (blocked > 0) {
             fireOnRelease = true;
         } else {
             super.fireValueChangedEvent();

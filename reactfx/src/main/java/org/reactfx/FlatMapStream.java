@@ -7,6 +7,7 @@ import java.util.function.Function;
  * See {@link EventStream#flatMap(Function)}
  */
 class FlatMapStream<T, U> extends EventStreamBase<U> {
+
     private final EventStream<T> source;
     private final Function<? super T, ? extends EventStream<U>> mapper;
 
@@ -34,6 +35,7 @@ class FlatMapStream<T, U> extends EventStreamBase<U> {
 }
 
 class FlatMapOptStream<T, U> extends EventStreamBase<U> {
+
     private final EventStream<T> source;
     private final Function<? super T, Optional<U>> mapper;
 

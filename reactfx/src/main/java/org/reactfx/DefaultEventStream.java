@@ -3,6 +3,7 @@ package org.reactfx;
 import java.util.function.Consumer;
 
 class DefaultEventStream<T> extends EventStreamBase<T> {
+
     private final EventStream<T> input;
     private final T initial;
 
@@ -19,9 +20,9 @@ class DefaultEventStream<T> extends EventStreamBase<T> {
 
     @Override
     protected void newObserver(Consumer<? super T> observer) {
-        if(firstObserver) {
+        if (firstObserver) {
             firstObserver = false;
-            if(!emitted) {
+            if (!emitted) {
                 observer.accept(initial);
             }
         } else {

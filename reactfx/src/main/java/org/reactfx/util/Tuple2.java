@@ -1,6 +1,6 @@
 package org.reactfx.util;
 
-import static org.reactfx.util.Tuples.*;
+import static org.reactfx.util.Tuples.t;
 
 import java.util.Objects;
 import java.util.function.BiConsumer;
@@ -8,6 +8,7 @@ import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 
 public class Tuple2<A, B> {
+
     public final A _1;
     public final B _2;
 
@@ -17,6 +18,7 @@ public class Tuple2<A, B> {
     }
 
     public A get1() { return _1; }
+
     public B get2() { return _2; }
 
     public Tuple2<A, B> update1(A a) {
@@ -41,7 +43,7 @@ public class Tuple2<A, B> {
 
     @Override
     public boolean equals(Object other) {
-        if(other instanceof Tuple2) {
+        if (other instanceof Tuple2) {
             Tuple2<?, ?> that = (Tuple2<?, ?>) other;
             return Objects.equals(this._1, that._1)
                     && Objects.equals(this._2, that._2);
@@ -58,8 +60,8 @@ public class Tuple2<A, B> {
     @Override
     public String toString() {
         return "("
-                + Objects.toString(_1) + ", "
-                + Objects.toString(_2)
+                + _1 + ", "
+                + _2
                 + ")";
     }
 }

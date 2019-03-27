@@ -9,6 +9,7 @@ import javafx.concurrent.Task;
  * See {@link EventStream#map(Function)}
  */
 class MappedStream<T, U> extends EventStreamBase<U> {
+
     private final EventStream<T> input;
     private final Function<? super T, ? extends U> f;
 
@@ -28,8 +29,8 @@ class MappedStream<T, U> extends EventStreamBase<U> {
 }
 
 class MappedToCompletionStageStream<T, U>
-extends MappedStream<T, CompletionStage<U>>
-implements CompletionStageStream<U> {
+        extends MappedStream<T, CompletionStage<U>>
+        implements CompletionStageStream<U> {
 
     public MappedToCompletionStageStream(
             EventStream<T> input,
@@ -39,8 +40,8 @@ implements CompletionStageStream<U> {
 }
 
 class MappedToTaskStream<T, U>
-extends MappedStream<T, Task<U>>
-implements TaskStream<U> {
+        extends MappedStream<T, Task<U>>
+        implements TaskStream<U> {
 
     public MappedToTaskStream(
             EventStream<T> input,

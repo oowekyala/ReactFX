@@ -33,32 +33,49 @@ public interface Either<L, R> {
     }
 
     boolean isLeft();
+
     boolean isRight();
+
     L getLeft();
+
     R getRight();
+
     L toLeft(Function<? super R, ? extends L> f);
+
     R toRight(Function<? super L, ? extends R> f);
+
     Optional<L> asLeft();
+
     Optional<R> asRight();
+
     void ifLeft(Consumer<? super L> f);
+
     void ifRight(Consumer<? super R> f);
+
     void exec(
             Consumer<? super L> ifLeft,
             Consumer<? super R> ifRight);
+
     <L2> Either<L2, R> mapLeft(
             Function<? super L, ? extends L2> f);
+
     <R2> Either<L, R2> mapRight(
             Function<? super R, ? extends R2> f);
+
     <L2, R2> Either<L2, R2> map(
             Function<? super L, ? extends L2> f,
             Function<? super R, ? extends R2> g);
+
     <L2, R2> Either<L2, R2> flatMap(
             Function<? super L, Either<L2, R2>> f,
             Function<? super R, Either<L2, R2>> g);
+
     <L2> Either<L2, R> flatMapLeft(
             Function<? super L, Either<L2, R>> f);
+
     <R2> Either<L, R2> flatMapRight(
             Function<? super R, Either<L, R2>> f);
+
     <T> T unify(
             Function<? super L, ? extends T> f,
             Function<? super R, ? extends T> g);
@@ -66,6 +83,7 @@ public interface Either<L, R> {
 
 
 class Left<L, R> implements Either<L, R> {
+
     private final L value;
 
     public Left(L value) { this.value = value; }
@@ -161,7 +179,7 @@ class Left<L, R> implements Either<L, R> {
 
     @Override
     public final boolean equals(Object other) {
-        if(other instanceof Left) {
+        if (other instanceof Left) {
             Left<?, ?> that = (Left<?, ?>) other;
             return Objects.equals(this.value, that.value);
         } else {
@@ -177,6 +195,7 @@ class Left<L, R> implements Either<L, R> {
 
 
 class Right<L, R> implements Either<L, R> {
+
     private final R value;
 
     public Right(R value) { this.value = value; }
@@ -272,7 +291,7 @@ class Right<L, R> implements Either<L, R> {
 
     @Override
     public final boolean equals(Object other) {
-        if(other instanceof Right) {
+        if (other instanceof Right) {
             Right<?, ?> that = (Right<?, ?>) other;
             return Objects.equals(this.value, that.value);
         } else {

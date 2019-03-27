@@ -15,9 +15,11 @@ public interface Connectable<T> {
      * has at least one subscriber).
      * <p>A {@code Connectable} may be connected to multiple sources at
      * the same time.
+     *
      * @param source event stream to (lazily) connect to.
+     *
      * @return subscription that can be used to disconnect this connectable
-     * object from {@code source}.
+     *     object from {@code source}.
      */
     Subscription connectTo(EventStream<? extends T> source);
 }

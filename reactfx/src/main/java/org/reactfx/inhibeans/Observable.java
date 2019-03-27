@@ -17,12 +17,12 @@ public interface Observable extends javafx.beans.Observable, Guardian {
      * until the returned guard is released.
      *
      * @return a {@code Guard} instance that can be released to resume
-     * the delivery of invalidation and change events. If this observable
-     * has been invalidated one or more times before the guard is released,
-     * a single notification is passed to invalidation and change listeners
-     * of this observable.
-     * The returned {@code Guard} is {@code AutoCloseable}, which makes it
-     * convenient to use in try-with-resources.
+     *     the delivery of invalidation and change events. If this observable
+     *     has been invalidated one or more times before the guard is released,
+     *     a single notification is passed to invalidation and change listeners
+     *     of this observable.
+     *     The returned {@code Guard} is {@code AutoCloseable}, which makes it
+     *     convenient to use in try-with-resources.
      */
     Guard block();
 
@@ -46,7 +46,7 @@ public interface Observable extends javafx.beans.Observable, Guardian {
      * </pre>
      */
     default void blockWhile(Runnable r) {
-        try(Guard g = block()) {
+        try (Guard g = block()) {
             r.run();
         }
     }
@@ -69,7 +69,7 @@ public interface Observable extends javafx.beans.Observable, Guardian {
      * </pre>
      */
     default <T> T blockWhile(Supplier<T> f) {
-        try(Guard g = block()) {
+        try (Guard g = block()) {
             return f.get();
         }
     }

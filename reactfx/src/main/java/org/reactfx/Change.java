@@ -2,9 +2,11 @@ package org.reactfx;
 
 /**
  * Represents a change of a value.
+ *
  * @param <T> type of the value that changed.
  */
 public class Change<T> {
+
     private final T oldValue;
     private final T newValue;
 

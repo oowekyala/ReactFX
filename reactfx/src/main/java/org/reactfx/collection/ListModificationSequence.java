@@ -11,7 +11,7 @@ import org.reactfx.util.Lists;
  * @param <E> type of list elements
  */
 public interface ListModificationSequence<E>
-extends AbstractListModificationSequence<E, QuasiListModification<? extends E>> {
+        extends AbstractListModificationSequence<E, QuasiListModification<? extends E>> {
 
     /**
      * May be destructive for this object. Therefore, this object should not
@@ -29,7 +29,7 @@ extends AbstractListModificationSequence<E, QuasiListModification<? extends E>> 
 }
 
 interface AbstractListModificationSequence<E, M extends ListModificationLike<? extends E>>
-extends Iterable<M> {
+        extends Iterable<M> {
 
     List<? extends M> getModifications();
 

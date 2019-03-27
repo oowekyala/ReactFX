@@ -11,7 +11,9 @@ public final class Collections {
     /**
      * Creates an ObservableList wrapper that is able to temporarily block
      * list change notifications.
+     *
      * @param delegate the underlying observable list.
+     *
      * @deprecated Use {@link LiveList#suspendable(javafx.collections.ObservableList)} instead.
      */
     @Deprecated

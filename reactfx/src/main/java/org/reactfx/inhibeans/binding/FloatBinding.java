@@ -1,21 +1,20 @@
 package org.reactfx.inhibeans.binding;
 
-import javafx.beans.InvalidationListener;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-
 import org.reactfx.Guard;
 import org.reactfx.value.Val;
 
 import com.sun.javafx.binding.ExpressionHelper;
+import javafx.beans.InvalidationListener;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 
 /**
  * Inhibitory version of {@link javafx.beans.binding.FloatBinding}.
  */
 @Deprecated
 public abstract class FloatBinding
-extends javafx.beans.binding.FloatBinding
-implements Binding<Number> {
+        extends javafx.beans.binding.FloatBinding
+        implements Binding<Number> {
 
     /**
      * @deprecated Use {@link Val#suspendable(javafx.beans.value.ObservableValue)}.
@@ -23,7 +22,9 @@ implements Binding<Number> {
     @Deprecated
     public static FloatBinding wrap(ObservableValue<? extends Number> source) {
         return new FloatBinding() {
-            { bind(source); }
+            {
+                bind(source);
+            }
 
             @Override
             protected float computeValue() { return source.getValue().floatValue(); }
@@ -36,7 +37,7 @@ implements Binding<Number> {
 
     @Override
     public Guard block() {
-        if(blocked) {
+        if (blocked) {
             return Guard.EMPTY_GUARD;
         } else {
             blocked = true;
@@ -46,7 +47,7 @@ implements Binding<Number> {
 
     private void release() {
         blocked = false;
-        if(fireOnRelease) {
+        if (fireOnRelease) {
             fireOnRelease = false;
             ExpressionHelper.fireValueChangedEvent(helper);
         }
@@ -54,10 +55,11 @@ implements Binding<Number> {
 
     @Override
     protected final void onInvalidating() {
-        if(blocked)
+        if (blocked) {
             fireOnRelease = true;
-        else
+        } else {
             ExpressionHelper.fireValueChangedEvent(helper);
+        }
     }
 
 

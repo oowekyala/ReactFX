@@ -1,6 +1,7 @@
 package org.reactfx;
 
 public interface EventSink<T> {
+
     void push(T value);
 
     /**
@@ -8,9 +9,12 @@ public interface EventSink<T> {
      * <p>An event sink can be fed from multiple sources at the same time.
      * <p>{@code sink.feedFrom(stream)} is equivalent to
      * {@code stream.feedTo(sink)}
+     *
      * @param source event stream whose events will be pushed to this event sink
+     *
      * @return subscription that can be used to stop delivering {@code source}'s
-     * events to this event sink.
+     *     events to this event sink.
+     *
      * @see EventStream#feedTo(EventSink)
      */
     default Subscription feedFrom(EventStream<? extends T> source) {

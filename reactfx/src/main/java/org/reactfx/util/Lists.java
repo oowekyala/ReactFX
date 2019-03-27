@@ -1,6 +1,6 @@
 package org.reactfx.util;
 
-import static org.reactfx.util.Tuples.*;
+import static org.reactfx.util.Tuples.t;
 
 import java.util.AbstractList;
 import java.util.Arrays;
@@ -19,25 +19,31 @@ public final class Lists {
 
     public static <E> int hashCode(List<E> list) {
         int hashCode = 1;
-        for(E e: list) {
+        for (E e : list) {
             hashCode = 31 * hashCode + Objects.hashCode(e);
         }
         return hashCode;
     }
 
     public static boolean equals(List<?> list, Object o) {
-        if(o == list) return true;
+        if (o == list) {
+            return true;
+        }
 
-        if(!(o instanceof List)) return false;
+        if (!(o instanceof List)) {
+            return false;
+        }
 
         List<?> that = (List<?>) o;
 
-        if(list.size() != that.size()) return false;
+        if (list.size() != that.size()) {
+            return false;
+        }
 
         Iterator<?> it1 = list.iterator();
         Iterator<?> it2 = that.iterator();
-        while(it1.hasNext()) {
-            if(!Objects.equals(it1.next(), it2.next())) {
+        while (it1.hasNext()) {
+            if (!Objects.equals(it1.next(), it2.next())) {
                 return false;
             }
         }
@@ -49,9 +55,9 @@ public final class Lists {
         StringBuilder res = new StringBuilder();
         res.append('[');
         Iterator<?> it = list.iterator();
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             res.append(it.next());
-            if(it.hasNext()) {
+            if (it.hasNext()) {
                 res.append(", ");
             }
         }
@@ -88,7 +94,7 @@ public final class Lists {
     }
 
     public static void checkIndex(int min, int index, int max) {
-        if(!isValidIndex(min, index, max)) {
+        if (!isValidIndex(min, index, max)) {
             throw new IndexOutOfBoundsException(index + " not in [" + min + ", " + max + ")");
         }
     }
@@ -106,7 +112,7 @@ public final class Lists {
     }
 
     public static void checkPosition(int min, int position, int max) {
-        if(!isValidPosition(min, position, max)) {
+        if (!isValidPosition(min, position, max)) {
             throw new IndexOutOfBoundsException(position + " not in [" + min + ", " + max + "]");
         }
     }
@@ -124,10 +130,10 @@ public final class Lists {
     }
 
     public static void checkRange(int min, int from, int to, int max) {
-        if(!isValidRange(min, from, to, max)) {
+        if (!isValidRange(min, from, to, max)) {
             throw new IndexOutOfBoundsException(
                     "[" + from + ", " + to + ") is not a valid range within " +
-                    "[" + min + ", " + max + ")");
+                            "[" + min + ", " + max + ")");
         }
     }
 
@@ -200,7 +206,7 @@ public final class Lists {
      * will be visible through the concatenation view.
      */
     public static <E> List<E> concatView(List<List<? extends E>> lists) {
-        if(lists.isEmpty()) {
+        if (lists.isEmpty()) {
             return Collections.emptyList();
         } else {
             return ConcatView.create(lists);
@@ -227,8 +233,8 @@ public final class Lists {
     public static int commonPrefixLength(List<?> l, List<?> m) {
         ListIterator<?> i = l.listIterator();
         ListIterator<?> j = m.listIterator();
-        while(i.hasNext() && j.hasNext()) {
-            if(!Objects.equals(i.next(), j.next())) {
+        while (i.hasNext() && j.hasNext()) {
+            if (!Objects.equals(i.next(), j.next())) {
                 return i.nextIndex() - 1;
             }
         }
@@ -238,8 +244,8 @@ public final class Lists {
     public static int commonSuffixLength(List<?> l, List<?> m) {
         ListIterator<?> i = l.listIterator(l.size());
         ListIterator<?> j = m.listIterator(m.size());
-        while(i.hasPrevious() && j.hasPrevious()) {
-            if(!Objects.equals(i.previous(), j.previous())) {
+        while (i.hasPrevious() && j.hasPrevious()) {
+            if (!Objects.equals(i.previous(), j.previous())) {
                 return l.size() - i.nextIndex() - 1;
             }
         }
@@ -258,12 +264,12 @@ public final class Lists {
         int n1 = l1.size();
         int n2 = l2.size();
 
-        if(n1 == 0 || n2 == 0) {
+        if (n1 == 0 || n2 == 0) {
             return t(0, 0);
         }
 
         int pref = commonPrefixLength(l1, l2);
-        if(pref == n1 || pref == n2) {
+        if (pref == n1 || pref == n2) {
             return t(pref, 0);
         }
 
@@ -282,11 +288,11 @@ class ConcatView<E> extends AbstractList<E> {
     private static <E> List<E> concatView(
             List<List<? extends E>> lists, boolean makeUnmodifiable) {
         int len = lists.size();
-        if(len < 1) {
+        if (len < 1) {
             throw new AssertionError("Supposedly unreachable code");
-        } else if(len == 1) {
+        } else if (len == 1) {
             List<? extends E> list = lists.get(0);
-            if(makeUnmodifiable) {
+            if (makeUnmodifiable) {
                 return Collections.unmodifiableList(list);
             } else {
                 @SuppressWarnings("unchecked")
@@ -311,7 +317,7 @@ class ConcatView<E> extends AbstractList<E> {
 
     @Override
     public E get(int index) {
-        if(index < first.size()) {
+        if (index < first.size()) {
             return first.get(index);
         } else {
             return second.get(index - first.size());
@@ -343,17 +349,17 @@ class ListConcatenation<E> extends AbstractList<E> {
 
     static <E> List<E> create(List<List<? extends E>> lists) {
         return lists.stream()
-            .filter(l -> !l.isEmpty())
-            .map(l -> {
-                @SuppressWarnings("unchecked") // cast safe because l is unmodifiable
-                List<E> lst = (List<E>) l;
-                return lst instanceof ListConcatenation
-                    ? ((ListConcatenation<E>) lst).ft
-                    : FingerTree.mkTree(Collections.singletonList(lst), LIST_SIZE_MONOID);
-            })
-            .reduce(FingerTree::join)
-            .<List<E>>map(ListConcatenation<E>::new)
-            .orElse(Collections.emptyList());
+                    .filter(l -> !l.isEmpty())
+                    .map(l -> {
+                        @SuppressWarnings("unchecked") // cast safe because l is unmodifiable
+                                List<E> lst = (List<E>) l;
+                        return lst instanceof ListConcatenation
+                               ? ((ListConcatenation<E>) lst).ft
+                               : FingerTree.mkTree(Collections.singletonList(lst), LIST_SIZE_MONOID);
+                    })
+                    .reduce(FingerTree::join)
+                .<List<E>>map(ListConcatenation::new)
+                .orElse(Collections.emptyList());
     }
 
     private final FingerTree<List<E>, Integer> ft;
@@ -379,7 +385,7 @@ class ListConcatenation<E> extends AbstractList<E> {
     }
 
     private ListConcatenation<E> trim(int limit) {
-        return ft.caseEmpty().<ListConcatenation<E>>unify(
+        return ft.caseEmpty().unify(
                 emptyTree -> this,
                 neTree -> neTree.split(Integer::intValue, limit).map((l, m, r) -> {
                     FingerTree<List<E>, Integer> t =
@@ -389,7 +395,7 @@ class ListConcatenation<E> extends AbstractList<E> {
     }
 
     private ListConcatenation<E> drop(int n) {
-        return ft.caseEmpty().<ListConcatenation<E>>unify(
+        return ft.caseEmpty().unify(
                 emptyTree -> this,
                 neTree -> neTree.split(Integer::intValue, n).map((l, m, r) -> {
                     FingerTree<List<E>, Integer> t =

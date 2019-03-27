@@ -7,10 +7,10 @@ import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import javafx.beans.value.ObservableValue;
-
 import org.reactfx.util.AccumulatorSize;
 import org.reactfx.util.NotificationAccumulator;
+
+import javafx.beans.value.ObservableValue;
 
 /**
  * An event stream whose emission of events can be suspended temporarily. What
@@ -30,8 +30,8 @@ public interface SuspendableEventStream<T> extends EventStream<T>, Suspendable {
 }
 
 abstract class SuspendableEventStreamBase<T, A>
-extends SuspendableBase<Consumer<? super T>, T, A>
-implements ProperEventStream<T>, SuspendableEventStream<T> {
+        extends SuspendableBase<Consumer<? super T>, T, A>
+        implements ProperEventStream<T>, SuspendableEventStream<T> {
 
     protected SuspendableEventStreamBase(
             EventStream<T> source,
@@ -42,6 +42,7 @@ implements ProperEventStream<T>, SuspendableEventStream<T> {
 
 
 final class AccumulativeEventStream<T, A> extends SuspendableEventStreamBase<T, A> {
+
     private final Function<? super A, AccumulatorSize> size;
     private final Function<? super A, ? extends T> head;
     private final Function<? super A, ? extends A> tail;

@@ -8,6 +8,6 @@ import org.reactfx.inhibeans.Observable;
  */
 @Deprecated
 public interface ObservableList<E>
-extends javafx.collections.ObservableList<E>, Observable {
+        extends javafx.collections.ObservableList<E>, Observable {
 
 }

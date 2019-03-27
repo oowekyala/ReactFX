@@ -6,14 +6,15 @@ import org.reactfx.ObservableBase;
 import org.reactfx.Subscription;
 
 public abstract class ValBase<T>
-extends ObservableBase<Consumer<? super T>, T>
-implements ProperVal<T> {
+        extends ObservableBase<Consumer<? super T>, T>
+        implements ProperVal<T> {
+
     private boolean valid = false; // irrelevant when not isObservingInputs()
     private T value = null;
 
     @Override
     public final T getValue() {
-        if(!valid || !isObservingInputs()) {
+        if (!valid || !isObservingInputs()) {
             value = computeValue();
             valid = true;
         }
@@ -27,7 +28,7 @@ implements ProperVal<T> {
     }
 
     protected final void invalidate() {
-        if(valid) {
+        if (valid) {
             valid = false;
             notifyObservers(value);
         }
@@ -48,8 +49,10 @@ implements ProperVal<T> {
      * #invalidate()}, the input observer must have already updated any internal
      * state of this {@linkplain Val}, so that a subsequent call to {@link
      * #computeValue()} returns the current value of this {@linkplain Val}.
+     *
      * @return Subscription that can be used to stop observing inputs.
      */
     protected abstract Subscription connect();
+
     protected abstract T computeValue();
 }

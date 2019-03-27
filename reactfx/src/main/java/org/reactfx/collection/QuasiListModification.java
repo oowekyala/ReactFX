@@ -21,12 +21,12 @@ public interface QuasiListModification<E> extends ListModificationLike<E> {
         List<F> list = ch.getList();
         int from = ch.getFrom();
         int addedSize = ch.getTo() - from; // use (to - from), because
-                                           // ch.getAddedSize() is 0 on permutation
+        // ch.getAddedSize() is 0 on permutation
 
         List<F> removed;
-        if(ch.wasPermutated()) {
+        if (ch.wasPermutated()) {
             removed = new ArrayList<>(addedSize);
-            for(int i = 0; i < addedSize; ++i) {
+            for (int i = 0; i < addedSize; ++i) {
                 int pi = ch.getPermutation(from + i);
                 removed.add(list.get(pi));
             }

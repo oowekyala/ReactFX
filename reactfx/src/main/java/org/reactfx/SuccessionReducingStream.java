@@ -3,12 +3,13 @@ package org.reactfx;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import org.reactfx.util.Timer;
+
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.value.ObservableBooleanValue;
 
-import org.reactfx.util.Timer;
-
 class SuccessionReducingStream<I, O> extends EventStreamBase<O> implements AwaitingEventStream<O> {
+
     private final EventStream<I> input;
     private final Function<? super I, ? extends O> initial;
     private final BiFunction<? super O, ? super I, ? extends O> reduction;
@@ -32,7 +33,7 @@ class SuccessionReducingStream<I, O> extends EventStreamBase<O> implements Await
 
     @Override
     public ObservableBooleanValue pendingProperty() {
-        if(pending == null) {
+        if (pending == null) {
             pending = new BooleanBinding() {
                 @Override
                 protected boolean computeValue() {
@@ -54,7 +55,7 @@ class SuccessionReducingStream<I, O> extends EventStreamBase<O> implements Await
     }
 
     private void handleEvent(I i) {
-        if(hasEvent) {
+        if (hasEvent) {
             event = reduction.apply(event, i);
         } else {
             assert event == null;
@@ -75,7 +76,7 @@ class SuccessionReducingStream<I, O> extends EventStreamBase<O> implements Await
     }
 
     private void invalidatePending() {
-        if(pending != null) {
+        if (pending != null) {
             pending.invalidate();
         }
     }

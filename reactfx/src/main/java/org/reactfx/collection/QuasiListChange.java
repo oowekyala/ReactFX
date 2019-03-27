@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.reactfx.util.Lists;
+
 import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
-
-import org.reactfx.util.Lists;
 
 public interface QuasiListChange<E> extends ListModificationSequence<E> {
 
@@ -31,7 +31,7 @@ public interface QuasiListChange<E> extends ListModificationSequence<E> {
 
     static <E> QuasiListChange<E> from(Change<? extends E> ch) {
         QuasiListChangeImpl<E> res = new QuasiListChangeImpl<>();
-        while(ch.next()) {
+        while (ch.next()) {
             res.add(QuasiListModification.fromCurrentStateOf(ch));
         }
         return res;
@@ -48,8 +48,8 @@ public interface QuasiListChange<E> extends ListModificationSequence<E> {
 
 @SuppressWarnings("serial")
 final class QuasiListChangeImpl<E>
-extends ArrayList<QuasiListModification<? extends E>>
-implements QuasiListChange<E> {
+        extends ArrayList<QuasiListModification<? extends E>>
+        implements QuasiListChange<E> {
 
     public QuasiListChangeImpl() {
         super();

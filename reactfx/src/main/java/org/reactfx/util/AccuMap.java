@@ -1,6 +1,6 @@
 package org.reactfx.util;
 
-import static org.reactfx.util.Tuples.*;
+import static org.reactfx.util.Tuples.t;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -20,14 +20,19 @@ public interface AccuMap<K, V, A> {
     }
 
     boolean isEmpty();
+
     Tuple2<K, A> peek(AccumulationFacility<V, A> af);
+
     AccuMap<K, V, A> dropPeeked();
+
     AccuMap<K, V, A> updatePeeked(A newAccumulatedValue);
+
     AccuMap<K, V, A> addAll(Iterator<K> keys, V value, AccumulationFacility<V, A> af);
 }
 
 
 class EmptyAccuMap<K, V, A> implements AccuMap<K, V, A> {
+
     private static final AccuMap<?, ?, ?> INSTANCE = new EmptyAccuMap<>();
 
     @SuppressWarnings("unchecked")
@@ -68,7 +73,8 @@ class EmptyAccuMap<K, V, A> implements AccuMap<K, V, A> {
 
 
 class IteratorBasedAccuMap<K, V, A>
-implements AccuMap<K, V, A> {
+        implements AccuMap<K, V, A> {
+
     private K currentKey = null;
     private A currentAccumulatedValue = null;
 
@@ -87,7 +93,7 @@ implements AccuMap<K, V, A> {
 
     @Override
     public Tuple2<K, A> peek(AccumulationFacility<V, A> af) {
-        if(currentKey == null) {
+        if (currentKey == null) {
             currentKey = it.next();
             currentAccumulatedValue = af.initialAccumulator(value);
         }
@@ -111,15 +117,15 @@ implements AccuMap<K, V, A> {
 
     @Override
     public AccuMap<K, V, A> addAll(Iterator<K> keys, V value, AccumulationFacility<V, A> af) {
-        if(isEmpty()) {
+        if (isEmpty()) {
             this.it = keys;
             this.value = value;
             return this;
-        } else if(!keys.hasNext()) {
+        } else if (!keys.hasNext()) {
             return this;
         } else {
             HashAccuMap<K, V, A> res = new HashAccuMap<>();
-            if(currentKey != null) {
+            if (currentKey != null) {
                 res.put(currentKey, currentAccumulatedValue);
             }
             return res
@@ -129,7 +135,7 @@ implements AccuMap<K, V, A> {
     }
 
     private final void checkPeeked() {
-        if(currentKey == null) {
+        if (currentKey == null) {
             throw new NoSuchElementException("No peeked value present. Use peek() first.");
         }
     }
@@ -161,9 +167,9 @@ class HashAccuMap<K, V, A> extends HashMap<K, A> implements AccuMap<K, V, A> {
 
     @Override
     public AccuMap<K, V, A> addAll(Iterator<K> keys, V value, AccumulationFacility<V, A> af) {
-        while(keys.hasNext()) {
+        while (keys.hasNext()) {
             K key = keys.next();
-            if(this.containsKey(key)) {
+            if (this.containsKey(key)) {
                 A accum = this.get(key);
                 accum = af.reduce(accum, value);
                 this.put(key, accum);

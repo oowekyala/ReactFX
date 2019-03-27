@@ -3,6 +3,7 @@ package org.reactfx.util;
 import java.util.function.BiFunction;
 
 public final class BiIndex {
+
     public final int major;
     public final int minor;
 

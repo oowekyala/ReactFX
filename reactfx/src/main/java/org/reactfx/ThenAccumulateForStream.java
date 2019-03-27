@@ -5,13 +5,14 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import org.reactfx.util.Timer;
+
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.value.ObservableBooleanValue;
 
-import org.reactfx.util.Timer;
-
 class ThenAccumulateForStream<T, A> extends EventStreamBase<T> implements AwaitingEventStream<T> {
-    private static enum State {
+
+    private enum State {
         READY, ACC_NO_EVENT, ACC_HAS_EVENT
     }
 
@@ -41,7 +42,7 @@ class ThenAccumulateForStream<T, A> extends EventStreamBase<T> implements Awaiti
 
     @Override
     public ObservableBooleanValue pendingProperty() {
-        if(pending == null) {
+        if (pending == null) {
             pending = new BooleanBinding() {
                 @Override
                 protected boolean computeValue() {
@@ -63,7 +64,7 @@ class ThenAccumulateForStream<T, A> extends EventStreamBase<T> implements Awaiti
     }
 
     private void handleEvent(T t) {
-        switch(state) {
+        switch (state) {
         case READY:
             timer.restart();
             setState(State.ACC_NO_EVENT);
@@ -81,7 +82,7 @@ class ThenAccumulateForStream<T, A> extends EventStreamBase<T> implements Awaiti
 
     private void handleTimeout() {
         List<T> toEmit;
-        switch(state) {
+        switch (state) {
         case ACC_HAS_EVENT:
             toEmit = deconstruction.apply(acc);
             acc = null;
@@ -94,11 +95,11 @@ class ThenAccumulateForStream<T, A> extends EventStreamBase<T> implements Awaiti
             throw new AssertionError();
         }
 
-        for(T t: toEmit) {
+        for (T t : toEmit) {
             emit(t);
         }
 
-        if(state == State.ACC_NO_EVENT) { // no recursive emission occurred
+        if (state == State.ACC_NO_EVENT) { // no recursive emission occurred
             setState(State.READY);
         } else {
             // recursive emission occurred, start the timer to schedule emission
@@ -113,7 +114,7 @@ class ThenAccumulateForStream<T, A> extends EventStreamBase<T> implements Awaiti
     }
 
     private void invalidatePending() {
-        if(pending != null) {
+        if (pending != null) {
             pending.invalidate();
         }
     }

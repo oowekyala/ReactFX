@@ -14,7 +14,7 @@ import org.reactfx.util.NotificationAccumulator;
  * helper methods for implementations of <em>proper</em> {@linkplain LiveList}.
  */
 public interface ProperLiveList<E>
-extends LiveList<E>, ProperObservable<LiveList.Observer<? super E, ?>, QuasiListChange<? extends E>> {
+        extends LiveList<E>, ProperObservable<LiveList.Observer<? super E, ?>, QuasiListChange<? extends E>> {
 
     @Override
     default NotificationAccumulator<LiveList.Observer<? super E, ?>, QuasiListChange<? extends E>, ?> defaultNotificationAccumulator() {

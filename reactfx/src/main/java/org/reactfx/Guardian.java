@@ -5,26 +5,28 @@ import java.util.function.Supplier;
 
 /**
  * Interface for objects usable to guard execution (in some sense).
+ *
  * @deprecated superseded by {@link Suspendable}.
  */
 @Deprecated
 @FunctionalInterface
 public interface Guardian {
+
     Guard guard();
 
     default void guardWhile(Runnable r) {
-        try(Guard g = guard()) {
+        try (Guard g = guard()) {
             r.run();
         }
     }
 
     default <T> T guardWhile(Supplier<T> f) {
-        try(Guard g = guard()) {
+        try (Guard g = guard()) {
             return f.get();
         }
     }
 
-    static final Guardian EMPTY = () -> Guard.EMPTY_GUARD;
+    Guardian EMPTY = () -> Guard.EMPTY_GUARD;
 
     /**
      * Returns a guardian that combines all of the given guardians into one.
@@ -32,16 +34,21 @@ public interface Guardian {
      * order.
      */
     static Guardian combine(Guardian... guardians) {
-        switch(guardians.length) {
-            case 0: return EMPTY;
-            case 1: return guardians[0];
-            case 2: return new BiGuardian(guardians[0], guardians[1]);
-            default: return new MultiGuardian(guardians);
+        switch (guardians.length) {
+        case 0:
+            return EMPTY;
+        case 1:
+            return guardians[0];
+        case 2:
+            return new BiGuardian(guardians[0], guardians[1]);
+        default:
+            return new MultiGuardian(guardians);
         }
     }
 }
 
 class BiGuardian implements Guardian {
+
     private final Guardian g1;
     private final Guardian g2;
 
@@ -57,6 +64,7 @@ class BiGuardian implements Guardian {
 }
 
 class MultiGuardian implements Guardian {
+
     private final Guardian[] guardians;
 
     public MultiGuardian(Guardian... guardians) {

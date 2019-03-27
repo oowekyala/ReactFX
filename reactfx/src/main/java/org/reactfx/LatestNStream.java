@@ -10,6 +10,7 @@ import org.reactfx.util.Lists;
  * See {@link EventStream#latestN(int)}
  */
 class LatestNStream<T> extends EventStreamBase<List<T>> {
+
     private final EventStream<T> source;
     private final int n;
 
@@ -18,7 +19,7 @@ class LatestNStream<T> extends EventStreamBase<List<T>> {
     private List<T> concatView = null;
 
     public LatestNStream(EventStream<T> source, int n) {
-        if(n <= 0) {
+        if (n <= 0) {
             throw new IllegalArgumentException("n must be positive. Was " + n);
         }
 
@@ -35,7 +36,7 @@ class LatestNStream<T> extends EventStreamBase<List<T>> {
     }
 
     private void onEvent(T event) {
-        if(second.size() == n) {
+        if (second.size() == n) {
             first = second;
             second = new ArrayList<>(n);
             concatView = Lists.concatView(first, second);

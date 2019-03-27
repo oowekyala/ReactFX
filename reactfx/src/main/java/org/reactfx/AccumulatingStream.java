@@ -7,6 +7,7 @@ import java.util.function.Function;
  * See {@link EventStream#accumulate(BiFunction, Function)}
  */
 class AccumulatingStream<T, U> extends EventStreamBase<U> {
+
     private final EventStream<T> input;
     private final Function<? super T, ? extends U> initialTransformation;
     private final BiFunction<? super U, ? super T, ? extends U> reduction;

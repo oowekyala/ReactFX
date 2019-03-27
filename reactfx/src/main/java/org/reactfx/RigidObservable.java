@@ -2,6 +2,7 @@ package org.reactfx;
 
 /**
  * An observable that does not change and does not produce any notifications.
+ *
  * @param <O> observer type accepted by this {@linkplain Observable}
  */
 public abstract class RigidObservable<O> implements Observable<O> {

@@ -3,6 +3,7 @@ package org.reactfx;
 import javafx.beans.value.ObservableValue;
 
 class SuspendedWhenStream<T> extends EventStreamBase<T> {
+
     private final SuspendableEventStream<T> source;
     private final ObservableValue<Boolean> condition;
 

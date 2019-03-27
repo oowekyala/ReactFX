@@ -4,8 +4,8 @@ import org.reactfx.util.MapHelper;
 
 
 public final class ConnectableEventSource<T>
-extends EventStreamBase<T>
-implements ConnectableEventStream<T>, ConnectableEventSink<T> {
+        extends EventStreamBase<T>
+        implements ConnectableEventStream<T>, ConnectableEventSink<T> {
 
     private MapHelper<EventStream<? extends T>, Subscription> subscriptions = null;
 
@@ -17,7 +17,7 @@ implements ConnectableEventStream<T>, ConnectableEventSink<T> {
     @Override
     public Subscription connectTo(EventStream<? extends T> input) {
 
-        if(MapHelper.containsKey(subscriptions, input)) {
+        if (MapHelper.containsKey(subscriptions, input)) {
             throw new IllegalStateException("Already connected to event stream " + input);
         }
 
@@ -27,7 +27,7 @@ implements ConnectableEventStream<T>, ConnectableEventSink<T> {
         return () -> {
             Subscription s = MapHelper.get(subscriptions, input);
             subscriptions = MapHelper.remove(subscriptions, input);
-            if(s != null) {
+            if (s != null) {
                 s.unsubscribe();
             }
         };

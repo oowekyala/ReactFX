@@ -47,9 +47,11 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
 
     /**
      * Get notified every time this event stream emits a value.
+     *
      * @param subscriber handles emitted events.
+     *
      * @return subscription that can be used to stop observing this event
-     * stream.
+     *     stream.
      */
     default Subscription subscribe(Consumer<? super T> subscriber) {
         return observe(subscriber);
@@ -58,11 +60,13 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
     /**
      * Subscribes to this event stream for at most {@code n} events.
      * The subscriber is automatically removed after handling {@code n} events.
-     * @param n limit on how many events may be handled by {@code subscriber}.
-     * Must be positive.
+     *
+     * @param n          limit on how many events may be handled by {@code subscriber}.
+     *                   Must be positive.
      * @param subscriber handles emitted events.
+     *
      * @return {@linkplain Subscription} that may be used to unsubscribe before
-     * reaching {@code n} events handled by {@code subscriber}.
+     *     reaching {@code n} events handled by {@code subscriber}.
      */
     default Subscription subscribeFor(int n, Consumer<? super T> subscriber) {
         return new LimitedInvocationSubscriber<>(n, subscriber).subscribeTo(this);
@@ -79,9 +83,12 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
      * Starts pushing all events emitted by this stream to the given event sink.
      * <p>{@code stream.feedTo(sink)} is equivalent to
      * {@code sink.feedFrom(stream)}
+     *
      * @param sink event sink to which this event stream's events will be pushed
+     *
      * @return subscription that can be used to stop delivering this stream's
-     * events to {@code sink}.
+     *     events to {@code sink}.
+     *
      * @see EventSink#feedFrom(EventStream)
      */
     default Subscription feedTo(EventSink<? super T> sink) {
@@ -105,6 +112,7 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
      * subscription.
      *
      * <p>Equivalent to {@code subscribe(x -> {})}.
+     *
      * @return subscription used to cancel the pinning
      */
     default Subscription pin() {
@@ -138,7 +146,8 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
      * }
      * </pre>
      *
-     * @param defaultEvent the event this event stream will emit if something subscribes to this stream and this stream does not have an event.
+     * @param defaultEvent the event this event stream will emit if something subscribes to this stream and this stream
+     *                     does not have an event.
      */
     default EventStream<T> withDefaultEvent(T defaultEvent) {
         return new DefaultEventStream<>(this, defaultEvent);
@@ -220,7 +229,7 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
      */
     default EventStream<T> distinctOn(Duration duration) {
         Function<Runnable, Timer> timerFactory =
-            action -> FxTimer.create(duration, action);
+                action -> FxTimer.create(duration, action);
         return new DistinctOnStream<>(this, timerFactory);
     }
 
@@ -451,8 +460,8 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
             @Override
             protected Subscription observeInputs() {
                 return Subscription.multi(
-                        left.subscribe(l -> emit(Either.<T, U>left(l))),
-                        right.subscribe(r -> emit(Either.<T, U>right(r))));
+                        left.subscribe(l -> emit(Either.left(l))),
+                        right.subscribe(r -> emit(Either.right(r))));
             }
         };
     }
@@ -473,12 +482,12 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
      * </pre>
      * then lastest3's values are
      * <ul>
-     *     <li>a = [1]</li>
-     *     <li>b = [1,2]</li>
-     *     <li>c = [1,2,3]</li>
-     *     <li>d = [2,3,4]</li>
-     *     <li>e = [3,4,5]</li>
-     *     <li>f = [4,5,6]</li>
+     * <li>a = [1]</li>
+     * <li>b = [1,2]</li>
+     * <li>c = [1,2,3]</li>
+     * <li>d = [2,3,4]</li>
+     * <li>e = [3,4,5]</li>
+     * <li>f = [4,5,6]</li>
      * </ul>
      */
     default EventStream<List<T>> latestN(int n) {
@@ -507,18 +516,18 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
      *
      * <h2>Relationship to other EventStreams:</h2>
      * <ul>
-     *     <li>
-     *         This stream does NOT emit A's most recent event multiple
-     *         times whereas {@link #emitOnEach(EventStream)} does.
-     *     </li>
-     *     <li>
-     *         This stream ONLY emits A's events whereas {@link #emitBothOnEach(EventStream)}
-     *         emits both A and B's events as an event (a {@link Tuple2})
-     *     </li>
-     *     <li>
-     *         This stream does NOT emit A's event when A emits an event
-     *         whereas {@link #repeatOn(EventStream)} does.
-     *     </li>
+     * <li>
+     * This stream does NOT emit A's most recent event multiple
+     * times whereas {@link #emitOnEach(EventStream)} does.
+     * </li>
+     * <li>
+     * This stream ONLY emits A's events whereas {@link #emitBothOnEach(EventStream)}
+     * emits both A and B's events as an event (a {@link Tuple2})
+     * </li>
+     * <li>
+     * This stream does NOT emit A's event when A emits an event
+     * whereas {@link #repeatOn(EventStream)} does.
+     * </li>
      * </ul>
      */
     default EventStream<T> emitOn(EventStream<?> impulse) {
@@ -547,18 +556,18 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
      *
      * <h2>Relationship to other EventStreams:</h2>
      * <ul>
-     *     <li>
-     *         This stream DOES emit A's most recent event multiple
-     *         times whereas {@link #emitOn(EventStream)} does not.
-     *     </li>
-     *     <li>
-     *         This stream ONLY emits A's events whereas {@link #emitBothOnEach(EventStream)}
-     *         emits both A and B's events as an event.
-     *     </li>
-     *     <li>
-     *         This stream does not emit A's events when A emits an event
-     *         whereas {@link #repeatOn(EventStream)} does.
-     *     </li>
+     * <li>
+     * This stream DOES emit A's most recent event multiple
+     * times whereas {@link #emitOn(EventStream)} does not.
+     * </li>
+     * <li>
+     * This stream ONLY emits A's events whereas {@link #emitBothOnEach(EventStream)}
+     * emits both A and B's events as an event.
+     * </li>
+     * <li>
+     * This stream does not emit A's events when A emits an event
+     * whereas {@link #repeatOn(EventStream)} does.
+     * </li>
      * </ul>
      */
     default EventStream<T> emitOnEach(EventStream<?> impulse) {
@@ -586,11 +595,11 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
      *
      * <h2>Relationship to other EventStreams:</h2>
      * <ul>
-     *     <li>
-     *         This stream emits both A and B's events whereas {@link #emitOn(EventStream)},
-     *         {@link #emitOnEach(EventStream)}, and {@link #repeatOn(EventStream)}
-     *         only emit A's event under specific circumstances.
-     *     </li>
+     * <li>
+     * This stream emits both A and B's events whereas {@link #emitOn(EventStream)},
+     * {@link #emitOnEach(EventStream)}, and {@link #repeatOn(EventStream)}
+     * only emit A's event under specific circumstances.
+     * </li>
      * </ul>
      */
     default <I> EventStream<Tuple2<T, I>> emitBothOnEach(EventStream<I> impulse) {
@@ -619,19 +628,19 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
      *
      * <h2>Relationship to other EventStreams:</h2>
      * <ul>
-     *     <li>
-     *         This stream emits A's events when A emits an event and
-     *         it emits A's most recent event multiple times whereas
-     *         {@link #emitOn(EventStream)} doesn't.
-     *     </li>
-     *     <li>
-     *         This stream also emits A's most recent event whereas
-     *         {@link #emitOnEach(EventStream)} doesn't.
-     *     </li>
-     *     <li>
-     *         This stream only emits A's events whereas {@link #emitBothOnEach(EventStream)}
-     *         emits both A and B's events as an event.
-     *     </li>
+     * <li>
+     * This stream emits A's events when A emits an event and
+     * it emits A's most recent event multiple times whereas
+     * {@link #emitOn(EventStream)} doesn't.
+     * </li>
+     * <li>
+     * This stream also emits A's most recent event whereas
+     * {@link #emitOnEach(EventStream)} doesn't.
+     * </li>
+     * <li>
+     * This stream only emits A's events whereas {@link #emitBothOnEach(EventStream)}
+     * emits both A and B's events as an event.
+     * </li>
      * </ul>
      */
     default EventStream<T> repeatOn(EventStream<?> impulse) {
@@ -655,11 +664,10 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
      *                          a normal event.
      * @param vetoPeriod        Maximum time during which a vetoable event stays pending
      *
-     * @since RFXX
-     *
      * @see EventStreams#vetoableYes(EventStream, Duration)
      * @see EventStreams#vetoableNo(EventStream, Duration)
      * @see EventStreams#vetoableNull(EventStream, Duration)
+     * @since RFXX
      */
     default AwaitingEventStream<T> vetoable(Predicate<T> isVetoable,
                                             BiPredicate<T, T> isVeto,
@@ -775,10 +783,10 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
      * </pre>
      * then result's values are:
      * <ul>
-     *     <li>a = 4 [reduction(2, 4) == 4]</li>
-     *     <li>b = 5 [reduction(4, 1) == 1]</li>
-     *     <li>c = 5 [reduction(1, 5) == 5]</li>
-     *     <li>d = 5 [reduction(5, 7) == 5]</li>
+     * <li>a = 4 [reduction(2, 4) == 4]</li>
+     * <li>b = 5 [reduction(4, 1) == 1]</li>
+     * <li>c = 5 [reduction(1, 5) == 5]</li>
+     * <li>d = 5 [reduction(5, 7) == 5]</li>
      * </ul>
      *
      * <p>Note that {@link #forgetful()} is equivalent to
@@ -828,16 +836,16 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
      * </pre>
      *
      * @param initialTransformation Used to convert the first event after
-     * suspension to the cumulative value.
-     * @param accumulation Used to accumulate further incoming events to the
-     * cumulative value.
-     * @param size determines how many events can be emitted from the current
-     * cumulative value.
-     * @param head produces the first event off the cumulative value.
-     * @param tail returns a cumulative value that produces the same events
-     * as the given cumulative value, except the event returned by {@code head}.
-     * May be destructive for the given cumulative value.
-     * @param <A> type of the cumulative value
+     *                              suspension to the cumulative value.
+     * @param accumulation          Used to accumulate further incoming events to the
+     *                              cumulative value.
+     * @param size                  determines how many events can be emitted from the current
+     *                              cumulative value.
+     * @param head                  produces the first event off the cumulative value.
+     * @param tail                  returns a cumulative value that produces the same events
+     *                              as the given cumulative value, except the event returned by {@code head}.
+     *                              May be destructive for the given cumulative value.
+     * @param <A>                   type of the cumulative value
      */
     default <A> SuspendableEventStream<T> accumulative(
             Function<? super T, ? extends A> initialTransformation,
@@ -890,16 +898,16 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
      * }
      * </pre>
      *
-     * @param unit Function that supplies unit element of the accumulation.
+     * @param unit         Function that supplies unit element of the accumulation.
      * @param accumulation Used to accumulate further incoming events to the
-     * cumulative value.
-     * @param size determines how many events can be emitted from the current
-     * cumulative value.
-     * @param head produces the first event off the cumulative value.
-     * @param tail returns a cumulative value that produces the same events
-     * as the given cumulative value, except the event returned by {@code head}.
-     * May be destructive for the given cumulative value.
-     * @param <A> type of the cumulative value
+     *                     cumulative value.
+     * @param size         determines how many events can be emitted from the current
+     *                     cumulative value.
+     * @param head         produces the first event off the cumulative value.
+     * @param tail         returns a cumulative value that produces the same events
+     *                     as the given cumulative value, except the event returned by {@code head}.
+     *                     May be destructive for the given cumulative value.
+     * @param <A>          type of the cumulative value
      */
     default <A> SuspendableEventStream<T> accumulative(
             Supplier<? extends A> unit,
@@ -996,7 +1004,7 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
             BinaryOperator<T> reduction) {
         return accumulateBetween(
                 ticks,
-                Function.<T>identity(),
+                Function.identity(),
                 reduction,
                 Collections::singletonList);
     }
@@ -1010,7 +1018,10 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
         return accumulateBetween(
                 ticks,
                 (Supplier<List<T>>) ArrayList::new,
-                (l, t) -> { l.add(t); return l; },
+                (l, t) -> {
+                    l.add(t);
+                    return l;
+                },
                 Function.identity());
     }
 
@@ -1024,8 +1035,9 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
     /**
      * Version of {@link #accumulateUntilLater(Function, BiFunction, Function)}
      * for event streams that don't live on the JavaFX application thread.
+     *
      * @param eventThreadExecutor executor that executes actions on the thread
-     * from which this event stream is accessed.
+     *                            from which this event stream is accessed.
      */
     default <A> EventStream<T> accumulateUntilLater(
             Function<? super T, ? extends A> initialTransformation,
@@ -1071,8 +1083,9 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
     /**
      * Version of {@link #accumulateUntilLater(Supplier, BiFunction, Function)}
      * for event streams that don't live on the JavaFX application thread.
+     *
      * @param eventThreadExecutor executor that executes actions on the thread
-     * from which this event stream is accessed.
+     *                            from which this event stream is accessed.
      */
     default <A> EventStream<T> accumulateUntilLater(
             Supplier<? extends A> unit,
@@ -1118,14 +1131,15 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
     /**
      * Version of {@link #reduceUntilLater(BinaryOperator)} for event streams
      * that don't live on the JavaFX application thread.
+     *
      * @param eventThreadExecutor executor that executes actions on the thread
-     * from which this event stream is accessed.
+     *                            from which this event stream is accessed.
      */
     default EventStream<T> reduceUntilLater(
             BinaryOperator<T> reduction,
             Executor eventThreadExecutor) {
         return accumulateUntilLater(
-                Function.<T>identity(),
+                Function.identity(),
                 reduction,
                 Collections::singletonList,
                 eventThreadExecutor);
@@ -1150,8 +1164,9 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
     /**
      * Version of {@link #retainLatestUntilLater()} for event streams that
      * don't live on the JavaFX application thread.
+     *
      * @param eventThreadExecutor executor that executes actions on the thread
-     * from which this event stream is accessed.
+     *                            from which this event stream is accessed.
      */
     default EventStream<T> retainLatestUntilLater(Executor eventThreadExecutor) {
         return reduceUntilLater((a, b) -> b, eventThreadExecutor);
@@ -1172,13 +1187,17 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
     /**
      * Version of {@link #queueUntilLater()} for event streams that don't live
      * on the JavaFX application thread.
+     *
      * @param eventThreadExecutor executor that executes actions on the thread
-     * from which this event stream is accessed.
+     *                            from which this event stream is accessed.
      */
     default EventStream<T> queueUntilLater(Executor eventThreadExecutor) {
         return accumulateUntilLater(
                 (Supplier<List<T>>) ArrayList::new,
-                (l, t) -> { l.add(t); return l; },
+                (l, t) -> {
+                    l.add(t);
+                    return l;
+                },
                 l -> l,
                 eventThreadExecutor);
     }
@@ -1199,8 +1218,10 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
      * Returns a binding that holds the most recent event emitted from this
      * stream. The returned binding stays subscribed to this stream until its
      * {@code dispose()} method is called.
+     *
      * @param initialValue used as the returned binding's value until this
-     * stream emits the first value.
+     *                     stream emits the first value.
+     *
      * @return binding reflecting the most recently emitted value.
      */
     default Binding<T> toBinding(T initialValue) {
@@ -1227,6 +1248,7 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
      * Returns an event stream that accumulates events emitted from this event
      * stream and emits the accumulated value every time this stream emits a
      * value.
+     *
      * @param reduction function to reduce two events into one.
      */
     default EventStream<T> accumulate(BinaryOperator<T> reduction) {
@@ -1262,13 +1284,15 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
      * </pre>
      * where "#" is:
      * <ul>
-     *     <li>1 = "Chee" ("Cheese" (6) &gt; "Cake" (4) == true; "Cheese".subString(0, 4) == "Chee")</li>
-     *     <li>2 = "Sugar" ("Chee" (4) &gt; "Sugar" (5) == false; "Sugar")</li>
-     *     <li>3 = "Sug" ("Sugar" (5) &gt; "Oil" (3) == true); "Sugar".subString(0, 3) == "Sug")</li>
-     *     <li>4 = "French Toast" ("Sug" (3) &gt; "French Toast" (12) == false; "French Toast")</li>
-     *     <li>5 = "French" ("French Toast" (12) &gt; "Cookies" (6) == true; "French Toast".subString(0, 6) == "French")</li>
+     * <li>1 = "Chee" ("Cheese" (6) &gt; "Cake" (4) == true; "Cheese".subString(0, 4) == "Chee")</li>
+     * <li>2 = "Sugar" ("Chee" (4) &gt; "Sugar" (5) == false; "Sugar")</li>
+     * <li>3 = "Sug" ("Sugar" (5) &gt; "Oil" (3) == true); "Sugar".subString(0, 3) == "Sug")</li>
+     * <li>4 = "French Toast" ("Sug" (3) &gt; "French Toast" (12) == false; "French Toast")</li>
+     * <li>5 = "French" ("French Toast" (12) &gt; "Cookies" (6) == true; "French Toast".subString(0, 6) ==
+     * "French")</li>
      * </ul>
-     * @param unit initial value of the accumulated value.
+     *
+     * @param unit      initial value of the accumulated value.
      * @param reduction function to add an event to the accumulated value.
      */
     default <U> EventStream<U> accumulate(
@@ -1311,21 +1335,21 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
      * </pre>
      * where "#" is:
      * <ul>
-     *     <li>1 = "D" ("D" is a consonant)</li>
-     *     <li>2 = "DO" ("O" is a vowel)</li>
-     *     <li>3 = "DOE" ("E" is a vowel)</li>
-     *     <li>4 = "DOE" ("L" is a consonant)</li>
-     *     <li>5 = "DOE" ("K" is a consonant)</li>
-     *     <li>6 = "DOEI" ("I" is a vowel)</li>
-     *     <li>7 = "DOEIU" ("U" is a vowle)</li>
-     *     <li>8 = "DOEIU" ("T" is a consonant)</li>
+     * <li>1 = "D" ("D" is a consonant)</li>
+     * <li>2 = "DO" ("O" is a vowel)</li>
+     * <li>3 = "DOE" ("E" is a vowel)</li>
+     * <li>4 = "DOE" ("L" is a consonant)</li>
+     * <li>5 = "DOE" ("K" is a consonant)</li>
+     * <li>6 = "DOEI" ("I" is a vowel)</li>
+     * <li>7 = "DOEIU" ("U" is a vowle)</li>
+     * <li>8 = "DOEIU" ("T" is a consonant)</li>
      * </ul>
      *
-     * @param reduction function to add an event to the accumulated value.
+     * @param reduction             function to add an event to the accumulated value.
      * @param initialTransformation function to transform the first event from
-     * this stream to an event that can be emitted from the returned stream.
-     * Subsequent events emitted from this stream are accumulated to the value
-     * returned from this function.
+     *                              this stream to an event that can be emitted from the returned stream.
+     *                              Subsequent events emitted from this stream are accumulated to the value
+     *                              returned from this function.
      */
     default <U> EventStream<U> accumulate(
             BiFunction<? super U, ? super T, ? extends U> reduction,
@@ -1349,8 +1373,8 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
      * instead.</p>
      *
      * @param reduction function to reduce two events into one.
-     * @param timeout the maximum time difference between two subsequent
-     * events that can still be accumulated.
+     * @param timeout   the maximum time difference between two subsequent
+     *                  events that can still be accumulated.
      */
     default AwaitingEventStream<T> reduceSuccessions(
             BinaryOperator<T> reduction,
@@ -1371,12 +1395,12 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
      * instead.</p>
      *
      * @param initialTransformation function to transform a single event
-     * from this stream to an event that can be emitted from the returned
-     * stream.
-     * @param reduction function to add an event to the accumulated value.
-     * @param timeout the maximum time difference between two subsequent
-     * events that can still be accumulated.
-     * @param <U> type of events emitted from the returned stream.
+     *                              from this stream to an event that can be emitted from the returned
+     *                              stream.
+     * @param reduction             function to add an event to the accumulated value.
+     * @param timeout               the maximum time difference between two subsequent
+     *                              events that can still be accumulated.
+     * @param <U>                   type of events emitted from the returned stream.
      */
     default <U> AwaitingEventStream<U> reduceSuccessions(
             Function<? super T, ? extends U> initialTransformation,
@@ -1403,10 +1427,10 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
      * instead.</p>
      *
      * @param unitSupplier function that provides the unit element
-     * (i.e. initial value for accumulation) of type {@code U}
-     * @param reduction function to add an event to the accumulated value.
-     * @param timeout the maximum time difference between two subsequent
-     * events that can still be accumulated.
+     *                     (i.e. initial value for accumulation) of type {@code U}
+     * @param reduction    function to add an event to the accumulated value.
+     * @param timeout      the maximum time difference between two subsequent
+     *                     events that can still be accumulated.
      *
      * @see #reduceSuccessions(Function, BiFunction, Duration)
      */
@@ -1424,13 +1448,13 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
      * {@link #reduceSuccessions(BinaryOperator, Duration)}
      * to use outside of JavaFX application thread.
      *
-     * @param reduction function to reduce two events into one.
-     * @param timeout the maximum time difference between two subsequent
-     * events that can still be accumulated.
-     * @param scheduler used to schedule timeout expiration
+     * @param reduction           function to reduce two events into one.
+     * @param timeout             the maximum time difference between two subsequent
+     *                            events that can still be accumulated.
+     * @param scheduler           used to schedule timeout expiration
      * @param eventThreadExecutor executor that executes actions on the
-     * thread on which this stream's events are emitted. The returned stream
-     * will use this executor to emit events.
+     *                            thread on which this stream's events are emitted. The returned stream
+     *                            will use this executor to emit events.
      */
     default AwaitingEventStream<T> reduceSuccessions(
             BinaryOperator<T> reduction,
@@ -1449,15 +1473,15 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
      * to use outside of JavaFX application thread.
      *
      * @param initialTransformation function to transform a single event
-     * from this stream to an event that can be emitted from the returned
-     * stream.
-     * @param reduction function to accumulate an event to the stored value
-     * @param timeout the maximum time difference between two subsequent
-     * events that can still be accumulated.
-     * @param scheduler used to schedule timeout expiration
-     * @param eventThreadExecutor executor that executes actions on the
-     * thread on which this stream's events are emitted. The returned stream
-     * will use this executor to emit events.
+     *                              from this stream to an event that can be emitted from the returned
+     *                              stream.
+     * @param reduction             function to accumulate an event to the stored value
+     * @param timeout               the maximum time difference between two subsequent
+     *                              events that can still be accumulated.
+     * @param scheduler             used to schedule timeout expiration
+     * @param eventThreadExecutor   executor that executes actions on the
+     *                              thread on which this stream's events are emitted. The returned stream
+     *                              will use this executor to emit events.
      */
     default <U> AwaitingEventStream<U> reduceSuccessions(
             Function<? super T, ? extends U> initialTransformation,
@@ -1478,14 +1502,14 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
      * {@link #reduceSuccessions(Supplier, BiFunction, Duration)}
      * to use outside of JavaFX application thread.
      *
-     * @param unitSupplier function that provides the unit element
-     * @param reduction function to accumulate an event to the stored value
-     * @param timeout the maximum time difference between two subsequent
-     * events that can still be accumulated.
-     * @param scheduler used to schedule timeout expiration
+     * @param unitSupplier        function that provides the unit element
+     * @param reduction           function to accumulate an event to the stored value
+     * @param timeout             the maximum time difference between two subsequent
+     *                            events that can still be accumulated.
+     * @param scheduler           used to schedule timeout expiration
      * @param eventThreadExecutor executor that executes actions on the
-     * thread on which this stream's events are emitted. The returned stream
-     * will use this executor to emit events.
+     *                            thread on which this stream's events are emitted. The returned stream
+     *                            will use this executor to emit events.
      */
     default <U> AwaitingEventStream<U> reduceSuccessions(
             Supplier<? extends U> unitSupplier,
@@ -1516,7 +1540,7 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
      * instead.</p>
      *
      * @param timeout the maximum time difference between two subsequent events
-     * in a <em>close</em> succession.
+     *                in a <em>close</em> succession.
      */
     default AwaitingEventStream<T> successionEnds(Duration timeout) {
         return reduceSuccessions((a, b) -> b, timeout);
@@ -1525,12 +1549,13 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
     /**
      * An analog to {@link #successionEnds(Duration)} to use outside of JavaFX
      * application thread.
-     * @param timeout the maximum time difference between two subsequent events
-     * in a <em>close</em> succession.
-     * @param scheduler used to schedule timeout expiration
+     *
+     * @param timeout             the maximum time difference between two subsequent events
+     *                            in a <em>close</em> succession.
+     * @param scheduler           used to schedule timeout expiration
      * @param eventThreadExecutor executor that executes actions on the
-     * thread on which this stream's events are emitted. The returned stream
-     * will use this executor to emit events.
+     *                            thread on which this stream's events are emitted. The returned stream
+     *                            will use this executor to emit events.
      */
     default AwaitingEventStream<T> successionEnds(
             Duration timeout,
@@ -1685,9 +1710,9 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
     default AwaitingEventStream<T> thenIgnoreFor(Duration duration) {
         return thenAccumulateFor(
                 duration,
-                t -> Collections.<T>emptyList(),
+                t -> Collections.emptyList(),
                 (l, t) -> l,
-                Function.<List<T>>identity());
+                Function.identity());
     }
 
     default AwaitingEventStream<T> thenIgnoreFor(
@@ -1696,9 +1721,9 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
             Executor eventThreadExecutor) {
         return thenAccumulateFor(
                 duration,
-                t -> Collections.<T>emptyList(),
+                t -> Collections.emptyList(),
                 (l, t) -> l,
-                Function.<List<T>>identity(),
+                Function.identity(),
                 scheduler,
                 eventThreadExecutor);
     }
@@ -1747,12 +1772,14 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
      * This method allows to transfer events from one thread to another.
      * Any event emitted by this EventStream will be emitted by the returned
      * stream on a different thread.
+     *
      * @param sourceThreadExecutor executor that executes tasks on the thread
-     * from which this EventStream is accessed.
+     *                             from which this EventStream is accessed.
      * @param targetThreadExecutor executor that executes tasks on the thread
-     * from which the returned EventStream will be accessed.
+     *                             from which the returned EventStream will be accessed.
+     *
      * @return Event stream that emits the same events as this EventStream,
-     * but uses {@code targetThreadExecutor} to emit the events.
+     *     but uses {@code targetThreadExecutor} to emit the events.
      */
     default EventStream<T> threadBridge(
             Executor sourceThreadExecutor,
@@ -1764,10 +1791,13 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
      * Transfers events from the JavaFX application thread to another thread.
      * Equivalent to
      * {@code threadBridge(Platform::runLater, targetThreadExecutor)}.
+     *
      * @param targetThreadExecutor executor that executes tasks on the thread
-     * from which the returned EventStream will be accessed.
+     *                             from which the returned EventStream will be accessed.
+     *
      * @return Event stream that emits the same events as this EventStream,
-     * but uses {@code targetThreadExecutor} to emit the events.
+     *     but uses {@code targetThreadExecutor} to emit the events.
+     *
      * @see #threadBridge(Executor, Executor)
      */
     default EventStream<T> threadBridgeFromFx(Executor targetThreadExecutor) {
@@ -1778,10 +1808,13 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
      * Transfers events to the JavaFX application thread.
      * Equivalent to
      * {@code threadBridge(sourceThreadExecutor, Platform::runLater)}.
+     *
      * @param sourceThreadExecutor executor that executes tasks on the thread
-     * from which this EventStream is accessed.
+     *                             from which this EventStream is accessed.
+     *
      * @return Event stream that emits the same events as this EventStream,
-     * but emits them on the JavaFX application thread.
+     *     but emits them on the JavaFX application thread.
+     *
      * @see #threadBridge(Executor, Executor)
      */
     default EventStream<T> threadBridgeToFx(Executor sourceThreadExecutor) {
@@ -1795,6 +1828,7 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
      * guardians: before the emission, guards are acquired in the given order;
      * after the emission, previously acquired guards are released in reverse
      * order.
+     *
      * @deprecated Use {@link #suspenderOf(Suspendable)} instead.
      */
     @Deprecated

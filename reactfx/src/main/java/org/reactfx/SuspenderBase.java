@@ -4,7 +4,8 @@ import org.reactfx.util.Experimental;
 
 @Experimental
 public abstract class SuspenderBase<O, T, S extends Suspendable>
-extends ObservableBase<O, T> implements Suspender<S> {
+        extends ObservableBase<O, T> implements Suspender<S> {
+
     private final S suspendable;
 
     protected SuspenderBase(S suspendable) {
@@ -17,7 +18,7 @@ extends ObservableBase<O, T> implements Suspender<S> {
      * observers.
      */
     protected final void notifyObserversWhileSuspended(T notification) {
-        try(Guard g = suspendable.suspend()) {
+        try (Guard g = suspendable.suspend()) {
             notifyObservers(notification);
         }
     }

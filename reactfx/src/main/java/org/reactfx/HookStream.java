@@ -3,6 +3,7 @@ package org.reactfx;
 import java.util.function.Consumer;
 
 class HookStream<T> extends EventStreamBase<T> {
+
     private final EventStream<T> source;
     private final Consumer<? super T> sideEffect;
     private boolean sideEffectInProgress = false;
@@ -15,7 +16,7 @@ class HookStream<T> extends EventStreamBase<T> {
     @Override
     protected Subscription observeInputs() {
         return source.subscribe(t -> {
-            if(sideEffectInProgress) {
+            if (sideEffectInProgress) {
                 throw new IllegalStateException("Side effect is not allowed to cause recursive event emission");
             }
 

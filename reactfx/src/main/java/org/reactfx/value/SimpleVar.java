@@ -2,12 +2,13 @@ package org.reactfx.value;
 
 import java.util.Objects;
 
+import org.reactfx.Subscription;
+
 import javafx.beans.InvalidationListener;
 import javafx.beans.value.ObservableValue;
 
-import org.reactfx.Subscription;
-
 class SimpleVar<T> extends ValBase<T> implements Var<T> {
+
     private final InvalidationListener boundToListener = obs -> invalidate();
 
     private T value;
@@ -19,17 +20,17 @@ class SimpleVar<T> extends ValBase<T> implements Var<T> {
 
     @Override
     public void bind(ObservableValue<? extends T> other) {
-        if(other == null) {
+        if (other == null) {
             throw new IllegalArgumentException("Cannot bind to null");
         }
 
-        if(boundTo != null) {
+        if (boundTo != null) {
             boundTo.removeListener(boundToListener);
         }
 
         boundTo = other;
 
-        if(isObservingInputs()) {
+        if (isObservingInputs()) {
             boundTo.addListener(boundToListener);
         }
 
@@ -38,7 +39,7 @@ class SimpleVar<T> extends ValBase<T> implements Var<T> {
 
     @Override
     public void unbind() {
-        if(boundTo != null) {
+        if (boundTo != null) {
             boundTo.removeListener(boundToListener);
             boundTo = null;
         }
@@ -51,10 +52,10 @@ class SimpleVar<T> extends ValBase<T> implements Var<T> {
 
     @Override
     public void setValue(T value) {
-        if(isBound()) {
+        if (isBound()) {
             throw new IllegalStateException("Cannot set a bound property");
         } else {
-            if(!Objects.equals(value, this.value)) {
+            if (!Objects.equals(value, this.value)) {
                 this.value = value;
                 invalidate();
             }
@@ -63,12 +64,12 @@ class SimpleVar<T> extends ValBase<T> implements Var<T> {
 
     @Override
     protected Subscription connect() {
-        if(boundTo != null) {
+        if (boundTo != null) {
             boundTo.addListener(boundToListener);
         }
 
         return () -> {
-            if(boundTo != null) {
+            if (boundTo != null) {
                 boundTo.removeListener(boundToListener);
             }
         };
@@ -76,7 +77,7 @@ class SimpleVar<T> extends ValBase<T> implements Var<T> {
 
     @Override
     protected T computeValue() {
-        if(isBound()) {
+        if (isBound()) {
             value = boundTo.getValue();
         }
         return value;

@@ -4,12 +4,14 @@ package org.reactfx;
  * An {@linkplain Observable} that does not maintain its own collection of
  * observers, but rather adapts and registers every given observer with the
  * underlying {@linkplain Observable}
+ *
  * @param <O> observer type accepted by this {@linkplain Observable}
  * @param <P> observer type accepted by the underlying {@linkplain Observable}
  * @param <U> type of the underlying observable to which observers are delegated
  */
 public abstract class ProxyObservable<O, P, U extends Observable<P>>
-implements Observable<O> {
+        implements Observable<O> {
+
     private final U underlying;
 
     protected ProxyObservable(U underlying) {
@@ -27,7 +29,8 @@ implements Observable<O> {
      * `adaptObserver(o1).equals(adaptObserver(o2))`.
      *
      * @param observer observer to be adapted for the underlying
-     * {@linkplain Observable}
+     *                 {@linkplain Observable}
+     *
      * @return observer adapted for the underlying {@linkplain Observable}
      */
     protected abstract P adaptObserver(O observer);
@@ -41,8 +44,8 @@ implements Observable<O> {
         P adapted = adaptObserver(observer);
 
         assert adapted.equals(adaptObserver(observer))
-        : "Two adaptations of the same observer resulted in non-equal"
-        + " adapted observers";
+                : "Two adaptations of the same observer resulted in non-equal"
+                + " adapted observers";
 
         underlying.addObserver(adapted);
     }

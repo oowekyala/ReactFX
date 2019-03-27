@@ -85,7 +85,7 @@ public class FxTimer implements Timer {
         stop();
         long expected = seq;
         timeline.getKeyFrames().set(0, new KeyFrame(actionTime, ae -> {
-            if(seq == expected) {
+            if (seq == expected) {
                 action.run();
             }
         }));
