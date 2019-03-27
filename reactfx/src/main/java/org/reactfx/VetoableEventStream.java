@@ -29,12 +29,11 @@ final class VetoableEventStream<I> extends EventStreamBase<I> implements Awaitin
     private BooleanBinding pending = null;
     private I vetoable = null;
 
-    VetoableEventStream(
-            EventStream<I> input,
-            BiFunction<I, I, I> vetoableReduction,
-            Predicate<I> isVetoable,
-            BiPredicate<I, I> isVeto,
-            Function<Runnable, Timer> timerFactory) {
+    VetoableEventStream(EventStream<I> input,
+                        Predicate<I> isVetoable,
+                        BiPredicate<I, I> isVeto,
+                        BiFunction<I, I, I> vetoableReduction,
+                        Function<Runnable, Timer> timerFactory) {
 
         this.input = input;
         this.vetoableReduction = vetoableReduction;
