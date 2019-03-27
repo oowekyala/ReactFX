@@ -1,7 +1,8 @@
 subprojects {
-    version = '2.0-SNAPSHOT'
+    version = '2.0-M6'
 
     apply plugin: 'java'
+    apply plugin:  'idea'
     apply plugin: 'eclipse'
     apply plugin: 'osgi'
 
@@ -11,4 +12,11 @@ subprojects {
 
     sourceCompatibility = '1.8'
     targetCompatibility = '1.8'
+
+
+    idea {
+        module {
+            downloadSources = true
+        }
+    }
 }
