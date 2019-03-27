@@ -194,6 +194,35 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
         return new DistinctStream<>(this);
     }
 
+
+    /**
+     * Returns a new event stream that prunes distinct events only if
+     * they occur in during some specified period. That means, once the
+     * timer expires the latest event can be reemitted again. For example:
+     * <pre>
+     *     {@code
+     *     EventStream<Integer> A = ...;
+     *     EventStream<Integer> B = A.distinctOn(Duration.ofMillis(300));
+     *     }
+     * </pre>
+     * Then, if one dash represents 100ms:
+     * <pre>
+     *  Time     ---&gt;
+     *  A:       ---------1--1-------1--2--2------
+     *  Timer:            |--|---|   |--|--|---|
+     *  B:       ---------1----------1--2---------
+     * </pre>
+     *
+     * The second "1" is emitted by A while the timer is still on, so it isn't
+     * emitted by B. Its emission restarts the timer. Once the timer expires,
+     * a new "1" may be emitted.
+     */
+    default EventStream<T> distinctOn(Duration duration) {
+        Function<Runnable, Timer> timerFactory =
+            action -> FxTimer.create(duration, action);
+        return new DistinctOnStream<>(this, timerFactory);
+    }
+
     /**
      * Returns an event stream that emits the given constant value every time
      * this stream emits a value. For example, given
