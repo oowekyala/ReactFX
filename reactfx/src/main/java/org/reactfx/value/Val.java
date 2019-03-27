@@ -10,15 +10,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import javafx.animation.Interpolatable;
-import javafx.beans.InvalidationListener;
-import javafx.beans.property.Property;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.stage.Window;
-
 import org.reactfx.Change;
 import org.reactfx.EventStream;
 import org.reactfx.EventStreamBase;
@@ -32,6 +23,15 @@ import org.reactfx.util.PentaFunction;
 import org.reactfx.util.TetraFunction;
 import org.reactfx.util.TriFunction;
 import org.reactfx.util.WrapperBase;
+
+import javafx.animation.Interpolatable;
+import javafx.beans.InvalidationListener;
+import javafx.beans.property.Property;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.stage.Window;
 
 /**
  * Adds more operations to {@link ObservableValue}.
@@ -422,6 +422,15 @@ extends ObservableValue<T>, Observable<Consumer<? super T>> {
         return obs instanceof Val
                 ? (Val<T>) obs
                 : new ValWrapper<>(obs);
+    }
+
+
+    /**
+     * Creates a val that holds the latest value of the given stream. The
+     * initial value is used until the stream emits its first event.
+     */
+    static <T> Val<T> fromStream(EventStream<T> stream, T initialValue) {
+        return stream.toVal(initialValue);
     }
 
     static <T> Subscription observeChanges(
