@@ -4,6 +4,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.FloatProperty;
 import javafx.beans.property.IntegerProperty;
@@ -68,6 +69,16 @@ public interface Var<T> extends Val<T>, Property<T> {
      */
     static Var<Long> longVar(LongProperty p) {
         return mapBidirectional(p, Number::longValue, Function.identity());
+    }
+
+
+    /**
+     * Converts {@linkplain BooleanProperty} to {@code Var<Boolean>} to help deal
+     * with the consequences of {@linkplain BooleanProperty} not being a subtype
+     * of {@code Property<Boolean>}.
+     */
+    static Var<Boolean> booleanVar(BooleanProperty p) {
+        return Var.mapBidirectional(p, Boolean::booleanValue, Function.identity());
     }
 
     static <T, U> Var<U> mapBidirectional(
