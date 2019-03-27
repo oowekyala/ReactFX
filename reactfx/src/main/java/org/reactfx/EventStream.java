@@ -13,6 +13,7 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -636,6 +637,36 @@ public interface EventStream<T> extends Observable<Consumer<? super T>> {
     default EventStream<T> repeatOn(EventStream<?> impulse) {
         return new RepeatOnStream<>(this, impulse);
     }
+
+
+    /**
+     * Returns a new event stream whose events can be vetoed during a certain period,
+     * after which they are emitted.
+     *
+     * @param isVetoable        Predicate that accepts events that should wait for the veto period
+     *                          before it's emitted.
+     * @param isVeto            Predicate that accepts events that cancel a pending vetoable event.
+     *                          The pending vetoable is passed as first param, the event that may be
+     *                          a veto is the second param.
+     * @param vetoableReduction Reduces two vetoable events, if a new vetoable event is recorded
+     *                          while another one was already pending. The pending event is passed
+     *                          as the first parameter. If the result of the reduction is vetoable,
+     *                          then it's enqueued and treated as pending. Otherwise it's emitted as
+     *                          a normal event.
+     * @param vetoPeriod        Maximum time during which a vetoable event stays pending
+     *
+     * @see EventStreams#vetoableYes(EventStream, Duration)
+     * @see EventStreams#vetoableNo(EventStream, Duration)
+     * @see EventStreams#vetoableNull(EventStream, Duration)
+     */
+    default AwaitingEventStream<T> vetoable(Predicate<T> isVetoable,
+                                            BiPredicate<T, T> isVeto,
+                                            BiFunction<T, T, T> vetoableReduction,
+                                            Duration vetoPeriod) {
+        Function<Runnable, Timer> timerFactory = action -> FxTimer.create(vetoPeriod, action);
+        return new VetoableEventStream<>(this, isVetoable, isVeto, vetoableReduction, timerFactory);
+    }
+
 
     /**
      * Returns a suspendable event stream that, when suspended, suppresses

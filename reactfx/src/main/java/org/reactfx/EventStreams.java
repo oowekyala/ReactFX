@@ -1,14 +1,29 @@
 package org.reactfx;
 
-import static org.reactfx.util.Tuples.*;
+import static org.reactfx.util.Tuples.t;
 
 import java.time.Duration;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
+
+import org.reactfx.collection.ListModification;
+import org.reactfx.collection.LiveList;
+import org.reactfx.util.Either;
+import org.reactfx.util.FxTimer;
+import org.reactfx.util.Timer;
+import org.reactfx.util.Tuple2;
+import org.reactfx.util.Tuple3;
+import org.reactfx.util.Tuple4;
+import org.reactfx.util.Tuple5;
+import org.reactfx.util.Tuple6;
 
 import javafx.animation.AnimationTimer;
 import javafx.beans.InvalidationListener;
@@ -28,17 +43,6 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.MenuItem;
 import javafx.stage.Window;
-
-import org.reactfx.collection.ListModification;
-import org.reactfx.collection.LiveList;
-import org.reactfx.util.Either;
-import org.reactfx.util.FxTimer;
-import org.reactfx.util.Timer;
-import org.reactfx.util.Tuple2;
-import org.reactfx.util.Tuple3;
-import org.reactfx.util.Tuple4;
-import org.reactfx.util.Tuple5;
-import org.reactfx.util.Tuple6;
 
 public class EventStreams {
 
@@ -720,6 +724,49 @@ public class EventStreams {
             }
         };
     }
+
+    /**
+     * Returns a val that reflects "true" values of the input val only after the [vetoPeriod], and
+     * only if they're not vetoed by a "false" value emitted during the veto period. "false" values
+     * are reflected immediately.
+     *
+     * @param input      Boolean stream to observe
+     * @param vetoPeriod Duration within which "true" values can be vetoed
+     * @see #vetoableNo(EventStream, Duration)
+     * @see EventStream#vetoable(Predicate, BiPredicate, BiFunction, Duration)
+     */
+    public static AwaitingEventStream<Boolean> vetoableYes(EventStream<Boolean> input, Duration vetoPeriod) {
+        return input.vetoable(b -> b, (a, b) -> !b, (a, b) -> b, vetoPeriod);
+    }
+
+    /**
+     * Returns a val that reflects "false" values of the input val only after the [vetoPeriod], and
+     * only if they're not vetoed by a "true" value emitted during the veto period. "true" values
+     * are reflected immediately.
+     *
+     * @param input      Boolean stream to observe
+     * @param vetoPeriod Duration within which "false" values can be vetoed
+     *
+     * @see #vetoableYes(EventStream, Duration)
+     * @see EventStream#vetoable(Predicate, BiPredicate, BiFunction, Duration)
+     */
+    public static AwaitingEventStream<Boolean> vetoableNo(EventStream<Boolean> input, Duration vetoPeriod) {
+        return input.vetoable(b -> !b, (a, b) -> b, (a, b) -> b, vetoPeriod);
+    }
+
+    /**
+     * Returns a val that reflects "null" values of the input val only after the [vetoPeriod], and
+     * only if they're not vetoed by a non-null value emitted during the veto period. Non-null values
+     * are reflected immediately.
+     *
+     * @param input      Stream to observe
+     * @param vetoPeriod Duration within which null values can be vetoed
+     * @see EventStream#vetoable(Predicate, BiPredicate, BiFunction, Duration)
+     */
+    public static <T> AwaitingEventStream<T> vetoableNull(EventStream<T> input, Duration vetoPeriod) {
+        return input.vetoable(Objects::isNull, (a, b) -> b != null, (a, b) -> null, vetoPeriod);
+    }
+
 
 
     private static class Pocket<T> {
